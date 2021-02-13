@@ -2,7 +2,7 @@ package ua.nure.webshop.domain;
 
 import javax.persistence.*;
 
-@Entity(name = "flash_memory_size")
+@Entity(name = "flash_memory_sizes")
 public class FlashMemorySize {
 
     @Id

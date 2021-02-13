@@ -2,7 +2,7 @@ package ua.nure.webshop.domain;
 
 import javax.persistence.*;
 
-@Entity(name = "resolution")
+@Entity(name = "resolutions")
 public class Resolution {
 
     @Id

@@ -1,22 +1,17 @@
 package ua.nure.webshop.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ua.nure.webshop.domain.Categories;
-import ua.nure.webshop.domain.Product;
-import ua.nure.webshop.repos.ProductRepository;
+import ua.nure.webshop.domain.*;
 import ua.nure.webshop.service.CategoriesService;
+import ua.nure.webshop.service.ParametersService;
 import ua.nure.webshop.service.ProductService;
 
 import java.util.ArrayList;
@@ -31,13 +26,14 @@ public class ProductsController {
 
     @Value("${default.number.of.products.on.page}")
     private int defaultProductQuantity;
-    private ProductService productService;
-    private CategoriesService categoriesService;
+    private final ProductService productService;
+    private final CategoriesService categoriesService;
+    private final ParametersService parametersService;
 
-    @Autowired
-    public ProductsController(ProductService productService, CategoriesService categoriesService) {
+    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService) {
         this.productService = productService;
         this.categoriesService = categoriesService;
+        this.parametersService = parametersService;
     }
 
     @GetMapping()
@@ -60,18 +56,45 @@ public class ProductsController {
                                             Model model,
                                             @RequestParam("page") Optional<Integer> page,
                                             @RequestParam("size") Optional<Integer> size,
-                                            @RequestParam List<String> search) {
-
-
+                                            @RequestParam(name = "diagonals", required = false) Optional<List<String>> diagonalParams) {
+        List<String> list = diagonalParams.orElse(new ArrayList());
+        System.out.println("List params: " + list.toString());
 
         Page<Product> productsPage = productService.findProductsByCategoryName(setPageRequest(page, size), categoryName);
         model.addAttribute("productPage", productsPage);
 
         List<Categories> categories = new ArrayList();
         categories.add(new Categories(categoryName));
-        model.addAttribute("categories", categories.get(0));
+        model.addAttribute("categories", categories);
 
         setPageNumbersInModel(productsPage, model);
+
+        Iterable<Diagonal> diagonals = parametersService.finalAllDiagonals();
+        model.addAttribute("diagonals", diagonals);
+
+        Iterable<Resolution> resolutions = parametersService.findAllResolutions();
+        model.addAttribute("resolutions", resolutions);
+
+        Iterable<MemorySize> memorySizes = parametersService.findAllMemorySizes();
+        model.addAttribute("memorySizes", memorySizes);
+
+        Iterable<FlashMemorySize> flashMemorySizes = parametersService.findAllFlashMemorySizes();
+        model.addAttribute("flashMemorySizes", flashMemorySizes);
+
+        Iterable<BatteryCapacity> batteryCapacities = parametersService.findAllBatteryCapacities();
+        model.addAttribute("batteryCapacities", batteryCapacities);
+
+        Iterable<Capacity> capacities = parametersService.findAllCapacities();
+        model.addAttribute("capacities", capacities);
+
+        Iterable<Color> colors = parametersService.findAllColors();
+        model.addAttribute("colors", colors);
+
+        Iterable<Cpu> cpus = parametersService.findAllCpus();
+        model.addAttribute("cpus", cpus);
+
+        Iterable<DisplayType> displayTypes = parametersService.findAllDisplayTypes();
+        model.addAttribute("displayTypes", displayTypes);
 
         return "products/products";
     }

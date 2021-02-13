@@ -6,6 +6,15 @@ DROP TABLE IF exists users;
 DROP TABLE IF exists products;
 DROP TABLE IF exists manufacturers;
 DROP TABLE IF exists categories;
+DROP TABLE IF exists diagonals;
+DROP TABLE IF exists resolutions;
+DROP TABLE IF exists memory_sizes;
+DROP TABLE IF exists flash_memory_sizes;
+DROP TABLE IF exists battery_capacities;
+DROP TABLE IF exists colors;
+DROP TABLE IF exists display_types;
+DROP TABLE IF exists capacities;
+DROP TABLE IF exists cpus;
 -- --------------------------------------------------------------
 -- ROLES
 -- users roles
@@ -73,31 +82,103 @@ CREATE TABLE product_orders(
                                FOREIGN KEY (product_id)  REFERENCES products (product_id) ON DELETE CASCADE ON UPDATE cascade
 );
 
-CREATE TABLE diagonal(
+CREATE TABLE diagonals(
 	diagonal_id INTEGER NOT NULL PRIMARY KEY,
     diagonal_value VARCHAR(9) NOT NULL
 );
 
-insert into categories (category_name) values ("Computer");
-insert into categories (category_name) values ("Smartwatches");
-insert into categories (category_name) values ("Mobilephone");
+CREATE TABLE resolutions(
+	resolution_id INTEGER NOT NULL PRIMARY KEY,
+    resolution_value VARCHAR(9) NOT NULL
+);
+
+CREATE TABLE memory_sizes(
+	memory_size_id INTEGER NOT NULL PRIMARY KEY,
+    memory_size_value VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE flash_memory_sizes(
+	flash_memory_size_id INTEGER NOT NULL PRIMARY KEY,
+    flash_memory_size_value VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE battery_capacities(
+	battery_capacity_id INTEGER NOT NULL PRIMARY KEY,
+    battery_capacity_value VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE colors(
+	color_id INTEGER NOT NULL PRIMARY KEY,
+    color_value VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE display_types(
+	display_type_id INTEGER NOT NULL PRIMARY KEY,
+    display_type_value VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE capacities(
+	capacity_id INTEGER NOT NULL PRIMARY KEY,
+    capacity_value VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE cpus(
+	cpu_id INTEGER NOT NULL PRIMARY KEY,
+    cpu_value VARCHAR(50) NOT NULL
+);
+
+insert into categories (category_name) values ("computers");
+insert into categories (category_name) values ("smartwatches");
+insert into categories (category_name) values ("smartphones");
 
 insert into manufacturers (manufacturer_name) values ("Apple");
 insert into manufacturers (manufacturer_name) values ("Samsung");
 insert into manufacturers (manufacturer_name) values ("Lenovo");
 
-insert into diagonal (diagonal_id, diagonal_value) values (1, "5 - 5.9");
-insert into diagonal (diagonal_id, diagonal_value) values (2, "6 - 6.4");
-insert into diagonal (diagonal_id, diagonal_value) values (3, "6.5 - 6.9");
+insert into diagonals (diagonal_id, diagonal_value) values (1, "5 - 5.9");
+insert into diagonals (diagonal_id, diagonal_value) values (2, "6 - 6.4");
+insert into diagonals (diagonal_id, diagonal_value) values (3, "6.5 - 6.9");
 
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("Macbook", 1500, 'It`s a revolution!', 'computer4.jpg', 2, 1, 1);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("Apple Watch", 600, 'It`s a revolution!', 'computer4.jpg', 2, 2, 1);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("IPhone", 1000, 'It`s a revolution!', 'computer4.jpg', 2, 3, 1);
+insert into resolutions (resolution_id, resolution_value) values (1, "3840x2160");
+insert into resolutions (resolution_id, resolution_value) values (2, "2160x1080");
+insert into resolutions (resolution_id, resolution_value) values (3, "1440x720");
 
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("Samsung S20", 1100, 'It`s a revolution!', 'computer4.', 2, 2, 2);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("Lenovo g400", 300, 'It`s a revolution!', 'computer4.', 2, 3, 3);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("Samsung S20 Plus", 1100, 'It`s a revolution!', 'computer4.', 2, 2, 2);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("One Plus 10", 400, 'It`s a revolution!', 'computer4.jpg', 2, 3, 3);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("Samsung Note 20", 500, 'It`s a revolution!', 'computer4.jpg', 2, 2, 2);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("IMac Pro 2020", 2000, 'It`s a revolution!', 'computer4.jpg', 2, 1, 3);
-insert into products (name, price, description, image_name, rating, category_id, manufacturer_id) values ("IMac Pro 2021", 3000, 'It`s a revolution!', 'computer4.jpg', 2, 1, 3);
+insert into memory_sizes (memory_size_id, memory_size_value) values (1, "2 Gb");
+insert into memory_sizes (memory_size_id, memory_size_value) values (2, "3 Gb");
+insert into memory_sizes (memory_size_id, memory_size_value) values (3, "4 Gb");
+
+insert into flash_memory_sizes (flash_memory_size_id, flash_memory_size_value) values (1, "16 Gb");
+insert into flash_memory_sizes (flash_memory_size_id, flash_memory_size_value) values (2, "32 Gb");
+insert into flash_memory_sizes (flash_memory_size_id, flash_memory_size_value) values (3, "64 Gb");
+
+insert into battery_capacities (battery_capacity_id, battery_capacity_value) values (1, "3000");
+insert into battery_capacities (battery_capacity_id, battery_capacity_value) values (2, "4000");
+insert into battery_capacities (battery_capacity_id, battery_capacity_value) values (3, "5000");
+
+insert into colors (color_id, color_value) values (1, "Blue");
+insert into colors (color_id, color_value) values (2, "Green");
+insert into colors (color_id, color_value) values (3, "Black");
+
+insert into display_types (display_type_id, display_type_value) values (1, "IPS");
+insert into display_types (display_type_id, display_type_value) values (2, "PLS");
+insert into display_types (display_type_id, display_type_value) values (3, "AMOLED");
+
+insert into capacities (capacity_id, capacity_value) values (1, "128");
+insert into capacities (capacity_id, capacity_value) values (2, "256");
+insert into capacities (capacity_id, capacity_value) values (3, "512");
+
+insert into cpus (cpu_id, cpu_value) values (1, "AMD ryzen 5");
+insert into cpus (cpu_id, cpu_value) values (2, "Intel core i5");
+insert into cpus (cpu_id, cpu_value) values (3, "Snapdragon 865");
+
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Macbook", 1500, 'It`s a revolution!', 'computer4.jpg', 1, 1);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Apple Watch", 600, 'It`s a revolution!', 'computer4.jpg', 2, 1);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("IPhone", 1000, 'It`s a revolution!', 'computer4.jpg', 3, 1);
+
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung S20", 1100, 'It`s a revolution!', 'computer4.jpg', 2, 2);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Lenovo g400", 300, 'It`s a revolution!', 'computer4.jpg', 3, 3);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung S20 Plus", 1100, 'It`s a revolution!', 'computer4.jpg', 2, 2);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("One Plus 10", 400, 'It`s a revolution!', 'computer4.jpg', 3, 3);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung Note 20", 500, 'It`s a revolution!', 'computer4.jpg', 2, 2);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("IMac Pro 2020", 2000, 'It`s a revolution!', 'computer4.jpg', 1, 3);
+insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("IMac Pro 2021", 3000, 'It`s a revolution!', 'computer4.jpg', 1, 3);

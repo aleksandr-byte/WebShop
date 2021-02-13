@@ -3,7 +3,7 @@ package ua.nure.webshop.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "diagonal")
+@Table(name = "diagonals")
 public class Diagonal {
 
     @Id
@@ -14,4 +14,30 @@ public class Diagonal {
     @Column(name = "diagonal_value", nullable = false, length = 100)
     private String value;
 
+    public Diagonal() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "Diagonal{" +
+                "id=" + id +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

@@ -19,7 +19,7 @@
     <!-- Custom styles for this template -->
     <link href="/products/css/shop-homepage.css" type="text/css" rel="stylesheet">
 </head>
-<body>
+<body th:onload="loadPage()">
 
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -64,24 +64,201 @@
     <div class="row">
 
         <div class="col-lg-3">
-
-            <h1 class="my-4">Category</h1>
             <div class="list-group">
+                <h1 class="title">Category</h1>
                 <div th:each="category : ${categories}">
                     <a th:href="@{/products/{category}(category=${category.getCategoryName()})}" class="list-group-item"
                        th:text="${category.getCategoryName()}"/>
                 </div>
             </div>
-            <h1 class="my-4">Parameters</h1>
-            <div class="list-group">
-                <a href="#" class="list-group-item">Диагональ</a>
-                <a href="#" class="list-group-item">Разрешение</a>
-                <a href="#" class="list-group-item">Тип дисплея</a>
-                <a href="#" class="list-group-item">Камера</a>
-                <a href="#" class="list-group-item">Емкость батареи</a>
+            <div class="card" th:if="${categories.size() == 1}">
+                <h1 class="title">Parameters</h1>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside1"
+                                                   data-abc="true" aria-expanded="false" class="collapsed"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Price </h6>
+                    </a></header>
+                    <div class="filter-content collapse" id="collapse_aside1" style="">
+                        <div class="card-body"><input type="range" class="custom-range" min="0" max="100" name="">
+                            <div class="form-row">
+                                <div class="form-group col-md-6"><label>Min</label> <input class="form-control"
+                                                                                           placeholder="$0"
+                                                                                           type="number"></div>
+                                <div class="form-group text-right col-md-6"><label>Max</label> <input
+                                        class="form-control" placeholder="$1,0000" type="number"></div>
+                            </div>
+                            <a href="#" class="highlight-button btn btn-medium button xs-margin-bottom-five"
+                               data-abc="true">Apply Now</a>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside2"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Diagonals </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside2" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="diagonal : ${diagonals}">
+                                <input type="checkbox"
+                                       th:id="'diagonals' + ${diagonal.getId()}"
+                                       th:onclick="setFilterParameters([[${diagonal.getId()}]],[['diagonals']]);"
+                                       class="custom-control-input"/>
+                                <div class="custom-control-label" th:text="${diagonal.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside3"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Resolutions </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside3" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="resolution : ${resolutions}">
+                                <input type="checkbox"
+                                       th:id="'resolutions' + ${resolution.getId()}"
+                                       th:onclick="setFilterParameters([[${resolution.getId()}]],[['resolutions']]);"
+                                       class="custom-control-input"/>
+                                <div class="custom-control-label" th:text="${resolution.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside4"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Memory sizes </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside4" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="memorySize : ${memorySizes}">
+                                <input type="checkbox"
+                                       th:id="'memorySizes' + ${memorySize.getId()}"
+                                       th:onclick="setFilterParameters([[${memorySize.getId()}]],[['memorySizes']]);"
+                                       class="custom-control-input">
+                                <div class="custom-control-label" th:text="${memorySize.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside5"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Flash memory sizes </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside5" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="flashMemorySize : ${flashMemorySizes}">
+                                <input type="checkbox"
+                                       th:id="'flashMemorySizes' + ${flashMemorySize.getId()}"
+                                       th:onclick="setFilterParameters([[${flashMemorySize.getId()}]],[['flashMemorySizes']]);"
+                                       class="custom-control-input">
+                                <div class="custom-control-label" th:text="${flashMemorySize.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside6"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Battery capacity </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside6" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="batteryCapacity : ${batteryCapacities}">
+                                <input type="checkbox"
+                                       th:id="'batteryCapacities' + ${batteryCapacity.getId()}"
+                                       th:onclick="setFilterParameters([[${batteryCapacity.getId()}]],[['batteryCapacities']]);"
+                                       class="custom-control-input">
+                                <div class="custom-control-label" th:text="${batteryCapacity.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside7"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Memory capacities </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside7" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="capacity : ${capacities}">
+                                <input type="checkbox"
+                                       th:id="'capacities' + ${capacity.getId()}"
+                                       th:onclick="setFilterParameters([[${capacity.getId()}]],[['capacities']]);"
+                                       class="custom-control-input">
+                                <div class="custom-control-label" th:text="${capacity.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside8"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Colors </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside8" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="color : ${colors}">
+                                <input type="checkbox"
+                                       th:id="'colors' + ${color.getId()}"
+                                       th:onclick="setFilterParameters([[${color.getId()}]],[['colors']]);"
+                                       class="custom-control-input">
+                                <div class="custom-control-label" th:text="${color.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside9"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Cpu </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside9" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="cpu : ${cpus}">
+                                <input type="checkbox"
+                                       th:id="'cpus' + ${cpu.getId()}"
+                                       th:onclick="setFilterParameters([[${cpu.getId()}]],[['cpus']]);"
+                                       class="custom-control-input">
+                                <div class="custom-control-label" th:text="${cpu.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside10"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Display types </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside10" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="displayType : ${displayTypes}">
+                                <input type="checkbox"
+                                       th:id="'displayTypes' + ${displayType.getId()}"
+                                       th:onclick="setFilterParameters([[${displayType.getId()}]],[['displayTypes']]);"
+                                       class="custom-control-input">
+                                <div class="custom-control-label" th:text="${displayType.getValue()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
             </div>
 
         </div>
+
         <!-- /.col-lg-3 -->
         <div class="col-lg-9">
             <div class="row">
@@ -120,9 +297,8 @@
                 </ul>
             </nav>
 
-            <div>
-                <p class="alert alert-danger" role="alert" th:text="'Nothing to show!'"
-                   th:if="${productPage.getContent().size() == 0}"/>
+            <div th:if="${productPage.getContent().size() == 0}">
+                <p class="alert alert-danger" role="alert" th:text="'Nothing to show!'"/>
                 <a class="stretched-link" th:onclick="history.back()"><h1>Back</h1></a>
                 <!-- JS history Back() -->
             </div>
@@ -175,6 +351,44 @@
 <!-- Bootstrap core JavaScript -->
 <script src="/products/vendor/jquery/jquery.min.js"></script>
 <script src="/products/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script language="JavaScript">
+    function setFilterParameters(id, paramName) {
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.searchParams);
+        var paramsValues = params.get(paramName);
+        var productUrl = url.href.substring(0, url.href.indexOf('?'));
 
+        if (paramsValues == null) {
+            paramsValues = id;
+            params.append(paramName, paramsValues);
+        } else {
+            params.delete(paramName);
+            if (paramsValues.match(id)) {
+                if (paramsValues.length > 1) {
+                    paramsValues = paramsValues.replaceAll("," + id, "");
+                    params.append(paramName, paramsValues);
+                }
+            } else {
+                paramsValues = paramsValues + "," + id;
+                params.append(paramName, paramsValues);
+            }
+        }
+        productUrl = productUrl + "?" + params;
+        productUrl = productUrl.replaceAll("%2C", ",")
+        document.location.href = productUrl;
+    }
+
+        function loadPage() {
+            var url = new URL(window.location.href);
+            var params = new URLSearchParams(url.searchParams);
+
+            params.forEach(function(filterParam, key) {
+                filterParam = filterParam.split(",");
+                for (var i = 0; i < filterParam.length; i++) {
+                    document.getElementById(key + filterParam[i]).checked = true;
+                }
+            });
+        }
+</script>
 </body>
 </html>

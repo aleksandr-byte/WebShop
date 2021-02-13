@@ -2,7 +2,7 @@ package ua.nure.webshop.domain;
 
 import javax.persistence.*;
 
-@Entity(name = "memory_size")
+@Entity(name = "memory_sizes")
 public class MemorySize {
 
     @Id
