@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ua.nure.webshop.domain.*;
+import ua.nure.webshop.repos.SmartphoneRepository;
 import ua.nure.webshop.service.CategoriesService;
 import ua.nure.webshop.service.ParametersService;
 import ua.nure.webshop.service.ProductService;
@@ -29,11 +30,13 @@ public class ProductsController {
     private final ProductService productService;
     private final CategoriesService categoriesService;
     private final ParametersService parametersService;
+    private final SmartphoneRepository smartphoneRepository;
 
-    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService) {
+    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService, SmartphoneRepository smartphoneRepository) {
         this.productService = productService;
         this.categoriesService = categoriesService;
         this.parametersService = parametersService;
+        this.smartphoneRepository = smartphoneRepository;
     }
 
     @GetMapping()
@@ -56,45 +59,33 @@ public class ProductsController {
                                             Model model,
                                             @RequestParam("page") Optional<Integer> page,
                                             @RequestParam("size") Optional<Integer> size,
-                                            @RequestParam(name = "diagonals", required = false) Optional<List<String>> diagonalParams) {
-        List<String> list = diagonalParams.orElse(new ArrayList());
-        System.out.println("List params: " + list.toString());
+                                            @RequestParam(name = "diagonals", required = false) Optional<List<String>> diagonalParams,
+                                            @RequestParam(name = "resolutions", required = false) Optional<List<String>> resolutionsParams,
+                                            @RequestParam(name = "memorySizes", required = false) Optional<List<String>> memorySizesParams,
+                                            @RequestParam(name = "flashMemorySizes", required = false) Optional<List<String>> flashMemorySizesParams,
+                                            @RequestParam(name = "batteryCapacities", required = false) Optional<List<String>> batteryCapacitiesParams,
+                                            @RequestParam(name = "capacities", required = false) Optional<List<String>> capacitiesParams,
+                                            @RequestParam(name = "colors", required = false) Optional<List<String>> colorsParams,
+                                            @RequestParam(name = "cpus", required = false) Optional<List<String>> cpusParams,
+                                            @RequestParam(name = "displayTypes", required = false) Optional<List<String>> displayTypesParams) {
 
-        Page<Product> productsPage = productService.findProductsByCategoryName(setPageRequest(page, size), categoryName);
-        model.addAttribute("productPage", productsPage);
+        Page<Computer> computers = productService.findAllComputers(setPageRequest(page, size));
+        Page<Smartphone> smartphones = productService.findAllSmartphones(setPageRequest(page, size));
+
+        if("computers".equals(categoryName)){
+
+        }
+        //Page<Product> productsPage = productService.findProductsByCategoryName(setPageRequest(page, size), categoryName);
+
+
+        model.addAttribute("productPage", computers);
 
         List<Categories> categories = new ArrayList();
         categories.add(new Categories(categoryName));
         model.addAttribute("categories", categories);
 
-        setPageNumbersInModel(productsPage, model);
-
-        Iterable<Diagonal> diagonals = parametersService.finalAllDiagonals();
-        model.addAttribute("diagonals", diagonals);
-
-        Iterable<Resolution> resolutions = parametersService.findAllResolutions();
-        model.addAttribute("resolutions", resolutions);
-
-        Iterable<MemorySize> memorySizes = parametersService.findAllMemorySizes();
-        model.addAttribute("memorySizes", memorySizes);
-
-        Iterable<FlashMemorySize> flashMemorySizes = parametersService.findAllFlashMemorySizes();
-        model.addAttribute("flashMemorySizes", flashMemorySizes);
-
-        Iterable<BatteryCapacity> batteryCapacities = parametersService.findAllBatteryCapacities();
-        model.addAttribute("batteryCapacities", batteryCapacities);
-
-        Iterable<Capacity> capacities = parametersService.findAllCapacities();
-        model.addAttribute("capacities", capacities);
-
-        Iterable<Color> colors = parametersService.findAllColors();
-        model.addAttribute("colors", colors);
-
-        Iterable<Cpu> cpus = parametersService.findAllCpus();
-        model.addAttribute("cpus", cpus);
-
-        Iterable<DisplayType> displayTypes = parametersService.findAllDisplayTypes();
-        model.addAttribute("displayTypes", displayTypes);
+        //setPageNumbersInModel(productsPage, model);
+        parametersService.setParametersToModel(model);
 
         return "products/products";
     }

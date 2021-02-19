@@ -1,5 +1,6 @@
 package ua.nure.webshop.service;
 
+import org.springframework.ui.Model;
 import ua.nure.webshop.domain.*;
 
 public interface ParametersService {
@@ -21,5 +22,7 @@ public interface ParametersService {
     Iterable<Cpu> findAllCpus();
 
     Iterable<DisplayType> findAllDisplayTypes();
+
+    void setParametersToModel(Model model);
 
 }

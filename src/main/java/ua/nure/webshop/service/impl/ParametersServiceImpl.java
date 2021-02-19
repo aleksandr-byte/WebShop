@@ -1,6 +1,7 @@
 package ua.nure.webshop.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import ua.nure.webshop.domain.*;
 import ua.nure.webshop.repos.*;
 import ua.nure.webshop.service.ParametersService;
@@ -75,5 +76,33 @@ public class ParametersServiceImpl implements ParametersService {
         return displayTypeRepository.findAll();
     }
 
+    @Override
+    public void setParametersToModel(Model model){
+        Iterable<Diagonal> diagonals = diagonalRepository.findAll();
+        model.addAttribute("diagonals", diagonals);
 
+        Iterable<Resolution> resolutions = resolutionRepository.findAll();
+        model.addAttribute("resolutions", resolutions);
+
+        Iterable<MemorySize> memorySizes = memoryRepository.findAll();
+        model.addAttribute("memorySizes", memorySizes);
+
+        Iterable<FlashMemorySize> flashMemorySizes = flashMemorySizeRepository.findAll();
+        model.addAttribute("flashMemorySizes", flashMemorySizes);
+
+        Iterable<BatteryCapacity> batteryCapacities = batteryCapacityRepository.findAll();
+        model.addAttribute("batteryCapacities", batteryCapacities);
+
+        Iterable<Capacity> capacities = capacityRepository.findAll();
+        model.addAttribute("capacities", capacities);
+
+        Iterable<Color> colors = colorRepository.findAll();
+        model.addAttribute("colors", colors);
+
+        Iterable<Cpu> cpus = cpuRepository.findAll();
+        model.addAttribute("cpus", cpus);
+
+        Iterable<DisplayType> displayTypes = displayTypeRepository.findAll();
+        model.addAttribute("displayTypes", displayTypes);
+    }
 }

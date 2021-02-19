@@ -356,7 +356,7 @@
         var url = new URL(window.location.href);
         var params = new URLSearchParams(url.searchParams);
         var paramsValues = params.get(paramName);
-        var productUrl = url.href.substring(0, url.href.indexOf('?'));
+        var filterUrl = url.href.substring(0, url.href.indexOf('?'));
 
         if (paramsValues == null) {
             paramsValues = id;
@@ -373,9 +373,9 @@
                 params.append(paramName, paramsValues);
             }
         }
-        productUrl = productUrl + "?" + params;
-        productUrl = productUrl.replaceAll("%2C", ",")
-        document.location.href = productUrl;
+        filterUrl = filterUrl + "?" + params;
+        filterUrl = filterUrl.replaceAll("%2C", ",")
+        document.location.href = filterUrl;
     }
 
         function loadPage() {

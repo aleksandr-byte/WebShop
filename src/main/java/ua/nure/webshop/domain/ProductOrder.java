@@ -25,6 +25,22 @@ public class ProductOrder implements Serializable {
     public ProductOrder() {
     }
 
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
