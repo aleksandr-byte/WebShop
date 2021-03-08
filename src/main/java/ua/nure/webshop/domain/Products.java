@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "products")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Product {
+public class Products {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,10 +31,10 @@ public class Product {
     @JoinColumn(name = "manufacturer_id")
     private Manufacturer manufacturer;
 
-    public Product() {
+    public Products() {
     }
 
-    public Product(String name, BigDecimal price, String description, String imageName, Categories category, Manufacturer manufacturer) {
+    public Products(String name, BigDecimal price, String description, String imageName, Categories category, Manufacturer manufacturer) {
         this.name = name;
         this.price = price;
         this.description = description;

@@ -14,21 +14,21 @@ public class ParametersServiceImpl implements ParametersService {
     private final MemoryRepository memoryRepository;
     private final FlashMemorySizeRepository flashMemorySizeRepository;
     private final BatteryCapacityRepository batteryCapacityRepository;
-    private final CapacityRepository capacityRepository;
     private final ColorRepository colorRepository;
     private final CpuRepository cpuRepository;
     private final DisplayTypeRepository displayTypeRepository;
+    private final ManufacturerRepository manufacturerRepository;
 
-    public ParametersServiceImpl(DiagonalRepository diagonalRepository, ResolutionRepository resolutionRepository, MemoryRepository memoryRepository, FlashMemorySizeRepository flashMemorySizeRepository, BatteryCapacityRepository batteryCapacityRepository, CapacityRepository capacityRepository, ColorRepository colorRepository, CpuRepository cpuRepository, DisplayTypeRepository displayTypeRepository) {
+    public ParametersServiceImpl(DiagonalRepository diagonalRepository, ResolutionRepository resolutionRepository, MemoryRepository memoryRepository, FlashMemorySizeRepository flashMemorySizeRepository, BatteryCapacityRepository batteryCapacityRepository, ColorRepository colorRepository, CpuRepository cpuRepository, DisplayTypeRepository displayTypeRepository, ManufacturerRepository manufacturerRepository) {
         this.diagonalRepository = diagonalRepository;
         this.resolutionRepository = resolutionRepository;
         this.memoryRepository = memoryRepository;
         this.flashMemorySizeRepository = flashMemorySizeRepository;
         this.batteryCapacityRepository = batteryCapacityRepository;
-        this.capacityRepository = capacityRepository;
         this.colorRepository = colorRepository;
         this.cpuRepository = cpuRepository;
         this.displayTypeRepository = displayTypeRepository;
+        this.manufacturerRepository = manufacturerRepository;
     }
 
     @Override
@@ -57,11 +57,6 @@ public class ParametersServiceImpl implements ParametersService {
     }
 
     @Override
-    public Iterable<Capacity> findAllCapacities() {
-        return capacityRepository.findAll();
-    }
-
-    @Override
     public Iterable<Color> findAllColors() {
         return colorRepository.findAll();
     }
@@ -74,6 +69,11 @@ public class ParametersServiceImpl implements ParametersService {
     @Override
     public Iterable<DisplayType> findAllDisplayTypes() {
         return displayTypeRepository.findAll();
+    }
+
+    @Override
+    public Iterable<Manufacturer> findAllManufacturers() {
+        return manufacturerRepository.findAll();
     }
 
     @Override
@@ -93,9 +93,6 @@ public class ParametersServiceImpl implements ParametersService {
         Iterable<BatteryCapacity> batteryCapacities = batteryCapacityRepository.findAll();
         model.addAttribute("batteryCapacities", batteryCapacities);
 
-        Iterable<Capacity> capacities = capacityRepository.findAll();
-        model.addAttribute("capacities", capacities);
-
         Iterable<Color> colors = colorRepository.findAll();
         model.addAttribute("colors", colors);
 
@@ -104,5 +101,8 @@ public class ParametersServiceImpl implements ParametersService {
 
         Iterable<DisplayType> displayTypes = displayTypeRepository.findAll();
         model.addAttribute("displayTypes", displayTypes);
+
+        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
+        model.addAttribute("manufacturers", manufacturers);
     }
 }

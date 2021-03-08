@@ -1,9 +1,12 @@
 USE webshop;
+DROP TABLE IF exists Smartphone;
+DROP TABLE IF exists Computer;
+DROP TABLE IF exists Smartwatch;
 DROP TABLE IF exists user_role;
 DROP TABLE IF exists product_orders;
 DROP TABLE IF exists orders;
 DROP TABLE IF exists users;
-DROP TABLE IF exists products;
+DROP TABLE IF exists Products;
 DROP TABLE IF exists manufacturers;
 DROP TABLE IF exists categories;
 DROP TABLE IF exists diagonals;
@@ -49,7 +52,7 @@ CREATE TABLE manufacturers(
                               manufacturer_name VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE products(
+CREATE TABLE Products(
                          product_id BIGINT NOT NULL auto_increment PRIMARY KEY,
                          name VARCHAR(20) NOT NULL UNIQUE,
                          price INTEGER NOT NULL,
@@ -74,6 +77,7 @@ CREATE TABLE orders(
 );
 
 CREATE TABLE product_orders(
+							   product_orders_id BIGINT NOT NULL auto_increment PRIMARY KEY,
                                orders_id VARCHAR(200) NOT NULL,
                                product_id BIGINT NOT NULL,
                                total_price DECIMAL NOT NULL,
@@ -127,9 +131,55 @@ CREATE TABLE cpus(
     cpu_value VARCHAR(50) NOT NULL
 );
 
-insert into categories (category_name) values ("computers");
-insert into categories (category_name) values ("smartwatches");
-insert into categories (category_name) values ("smartphones");
+CREATE TABLE Smartphone(
+	product_id BIGINT NOT NULL PRIMARY KEY,
+    diagonal_id INTEGER NOT NULL,
+    resolution_id INTEGER NOT NULL,
+    flash_memory_size_id INTEGER NOT NULL,
+    battery_capacity_id INTEGER NOT NULL,
+    color_id INTEGER NOT NULL,
+    display_type_id INTEGER NOT NULL,
+    memory_size_id INTEGER NOT NULL,
+    cpu_id INTEGER NOT NULL,
+	FOREIGN KEY (diagonal_id)  REFERENCES diagonals (diagonal_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (resolution_id)  REFERENCES resolutions (resolution_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (flash_memory_size_id)  REFERENCES flash_memory_sizes (flash_memory_size_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (battery_capacity_id)  REFERENCES battery_capacities (battery_capacity_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (color_id)  REFERENCES colors (color_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (display_type_id)  REFERENCES display_types (display_type_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (memory_size_id)  REFERENCES memory_sizes (memory_size_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (cpu_id)  REFERENCES cpus (cpu_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
+
+CREATE TABLE Computer(
+	product_id BIGINT NOT NULL PRIMARY KEY,
+    flash_memory_size_id INTEGER NOT NULL,
+    color_id INTEGER NOT NULL,
+    memory_size_id INTEGER NOT NULL,
+    cpu_id INTEGER NOT NULL,
+    FOREIGN KEY (flash_memory_size_id)  REFERENCES flash_memory_sizes (flash_memory_size_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (color_id)  REFERENCES colors (color_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (memory_size_id)  REFERENCES memory_sizes (memory_size_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (cpu_id)  REFERENCES cpus (cpu_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
+
+CREATE TABLE Smartwatch(
+	product_id BIGINT NOT NULL PRIMARY KEY,
+	diagonal_id INTEGER NOT NULL,
+    resolution_id INTEGER NOT NULL,
+    flash_memory_size_id INTEGER NOT NULL,
+	battery_capacity_id INTEGER NOT NULL,
+    color_id INTEGER NOT NULL,
+	FOREIGN KEY (diagonal_id)  REFERENCES diagonals (diagonal_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (resolution_id)  REFERENCES resolutions (resolution_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (flash_memory_size_id)  REFERENCES flash_memory_sizes (flash_memory_size_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (battery_capacity_id)  REFERENCES battery_capacities (battery_capacity_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
+    FOREIGN KEY (color_id)  REFERENCES colors (color_id) ON DELETE RESTRICT ON UPDATE RESTRICT
+);
+
+insert into categories (category_name) values ("Computer");
+insert into categories (category_name) values ("Smartwatch");
+insert into categories (category_name) values ("Smartphone");
 
 insert into manufacturers (manufacturer_name) values ("Apple");
 insert into manufacturers (manufacturer_name) values ("Samsung");
@@ -144,8 +194,8 @@ insert into resolutions (resolution_id, resolution_value) values (2, "2160x1080"
 insert into resolutions (resolution_id, resolution_value) values (3, "1440x720");
 
 insert into memory_sizes (memory_size_id, memory_size_value) values (1, "2 Gb");
-insert into memory_sizes (memory_size_id, memory_size_value) values (2, "3 Gb");
-insert into memory_sizes (memory_size_id, memory_size_value) values (3, "4 Gb");
+insert into memory_sizes (memory_size_id, memory_size_value) values (2, "4 Gb");
+insert into memory_sizes (memory_size_id, memory_size_value) values (3, "8 Gb");
 
 insert into flash_memory_sizes (flash_memory_size_id, flash_memory_size_value) values (1, "16 Gb");
 insert into flash_memory_sizes (flash_memory_size_id, flash_memory_size_value) values (2, "32 Gb");
@@ -171,14 +221,38 @@ insert into cpus (cpu_id, cpu_value) values (1, "AMD ryzen 5");
 insert into cpus (cpu_id, cpu_value) values (2, "Intel core i5");
 insert into cpus (cpu_id, cpu_value) values (3, "Snapdragon 865");
 
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Macbook", 1500, 'It`s a revolution!', 'computer4.jpg', 1, 1);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Apple Watch", 600, 'It`s a revolution!', 'computer4.jpg', 2, 1);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("IPhone", 1000, 'It`s a revolution!', 'computer4.jpg', 3, 1);
+-- Smartphones
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("IPhone 11 Pro Max", 1000, 'It`s a revolution!', 'computer4.jpg', 3, 1);
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung s21", 300, 'It`s a revolution!', 'computer4.jpg', 3, 2);
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung s20 Plus ", 400, 'It`s a revolution!', 'computer4.jpg', 3, 2);
+ insert into Smartphone (product_id, diagonal_id, resolution_id, flash_memory_size_id, battery_capacity_id, color_id, display_type_id, memory_size_id, cpu_id)
+ values (1, 3, 1, 3, 3, 2, 3, 2, 3);
+  insert into Smartphone (product_id, diagonal_id, resolution_id, flash_memory_size_id, battery_capacity_id, color_id, display_type_id, memory_size_id, cpu_id)
+ values (2, 2, 2, 2, 2, 1, 1, 1, 3);
+  insert into Smartphone (product_id, diagonal_id, resolution_id, flash_memory_size_id, battery_capacity_id, color_id, display_type_id, memory_size_id, cpu_id)
+ values (3, 1, 3, 1, 1, 3, 1, 1, 3);
 
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung S20", 1100, 'It`s a revolution!', 'computer4.jpg', 2, 2);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Lenovo g400", 300, 'It`s a revolution!', 'computer4.jpg', 3, 3);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung S20 Plus", 1100, 'It`s a revolution!', 'computer4.jpg', 2, 2);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("One Plus 10", 400, 'It`s a revolution!', 'computer4.jpg', 3, 3);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung Note 20", 500, 'It`s a revolution!', 'computer4.jpg', 2, 2);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("IMac Pro 2020", 2000, 'It`s a revolution!', 'computer4.jpg', 1, 3);
-insert into products (name, price, description, image_name, category_id, manufacturer_id) values ("IMac Pro 2021", 3000, 'It`s a revolution!', 'computer4.jpg', 1, 3);
+-- Computers
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Macbook", 1500, 'It`s a revolution!', 'computer4.jpg', 1, 1);
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("IMac Pro 2020", 2000, 'It`s a revolution!', 'computer4.jpg', 1, 1);
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Lenovo Think Pad", 3000, 'It`s a revolution!', 'computer4.jpg', 1, 3);
+  insert into Computer (product_id, flash_memory_size_id, color_id, memory_size_id, cpu_id)
+ values (4, 3, 2, 2, 3);
+  insert into Computer (product_id, flash_memory_size_id, color_id, memory_size_id, cpu_id)
+ values (5, 3, 2, 2, 2);
+  insert into Computer (product_id, flash_memory_size_id, color_id, memory_size_id, cpu_id)
+ values (6, 3, 3, 3, 3);
+
+-- Smart watches
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Apple Watch Series 3", 600, 'It`s a revolution!', 'computer4.jpg', 2, 1);
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung galaxy watch", 1100, 'It`s a revolution!', 'computer4.jpg', 2, 2);
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung active", 1100, 'It`s a revolution!', 'computer4.jpg', 2, 2);
+insert into Products (name, price, description, image_name, category_id, manufacturer_id) values ("Samsung gear s3", 500, 'It`s a revolution!', 'computer4.jpg', 2, 2);
+ insert into Smartwatch (product_id, diagonal_id, resolution_id, flash_memory_size_id, battery_capacity_id, color_id)
+ values (7, 3, 1, 3, 3, 2);
+  insert into Smartwatch (product_id, diagonal_id, resolution_id, flash_memory_size_id, battery_capacity_id, color_id)
+ values (8, 2, 2, 2, 2, 1);
+  insert into Smartwatch (product_id, diagonal_id, resolution_id, flash_memory_size_id, battery_capacity_id, color_id)
+ values (9, 1, 3, 1, 1, 3);
+   insert into Smartwatch (product_id, diagonal_id, resolution_id, flash_memory_size_id, battery_capacity_id, color_id)
+ values (10, 2, 3, 1, 1, 3);

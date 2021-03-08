@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Order</title>
+
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/users/fonts/iconic/css/material-design-iconic-font.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="/products/vendor/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/products/css/shop-homepage.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <span class="shop-logo">
+           <!--<i class="zmdi zmdi-usb"></i>-->
+            <i class="zmdi zmdi-github-alt"></i>
+        </span>
+        <a class="navbar-brand" href="/">Best buy</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/order">Order
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser != null}">
+                    <a class="nav-link" th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</a>
+                </li>
+                <form class="nav-item" th:action="@{/logout}" th:if="${#httpServletRequest.remoteUser != null}"
+                      method="post">
+                    <input class="btn btn-primary" type="submit" value="Sign Out"/>
+                </form>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser == null}">
+                    <a class="nav-link" href="/login">Sign in</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-lg-3">
+            <div class="list-group">
+                <div class="list-group-item">
+                    <div class="box">
+                        <div>Total price:</div>
+                        <div><p th:text="${totalPrice}"></p></div>
+                    </div>
+                </div>
+                <form th:action="${'/order/buy'}" th:method="post" th:id="buyForm">
+                    <div class="list-group-item">
+                        <select class="form-select" name="paymentOption" id="paymentOption" th:onchange="showCardField(this)">
+                            <option th:name="card" value="card" id="card" th:text="'card'"></option>
+                            <option th:name="cash" value="cash" id="cash" selected th:text="'cash'"></option>
+                        </select>
+                        <input th:name="cardNumber" type='hidden' name='cardNumber' id='cardNumber' placeholder="card number"/>
+                    </div>
+                    <div class="list-group-item">
+                        <select class="form-select" name="typeOfDelivery" th:id="typeOfDelivery" th:onchange="deliveryType(this)">
+                            <option value="pickupAddress" th:text="'From shop'"></option>
+                            <option value="deliveryAddress" th:text="'Delivery'"></option>
+                        </select>
+                        <input th:name="deliveryAddress" type='hidden' id='deliveryAddress' placeholder="Address"/>
+                        <br/>
+                        <select th:name="pickupAddress" class="form-select" id="pickupAddress" onclick="setDeliveryAddress(this.value)">
+                            <option value="Shop_1">Shop 1</option>
+                            <option value="Shop_2">Shop 2</option>
+                            <option value="Shop_3">Shop 3</option>
+                            <option value="Shop_4">Shop 4</option>
+                            <option value="Shop_5">Shop 5</option>
+                            <option value="Shop_6">Shop 6</option>
+                        </select>
+                    </div>
+                    <div class="list-group-item" th:if="${#httpServletRequest.remoteUser == null}">
+                        <input type="email" th:name="email" name='email' th:id='email' placeholder="Email"/>
+                    </div>
+                    <input type='button' name='buyProducts' id='buyProducts' value="Buy" class="btn btn-primary" onclick="checkOrderFields()"/>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- /.col-lg-3 -->
+        <div class="col-lg-9">
+            <div class="row">
+                <table class="table table-striped" th:if="${cart.size() > 0}">
+                    <thead>
+                    <tr>
+                        <th scope="col">Product name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product : ${cart}">
+                        <th scope="row" th:text="${product.getProduct().getName()}"></th>
+                        <td th:text="${product.getQuantity()}"></td>
+                        <td th:text="${product.getTotalPrice()}"></td>
+                        <!--<td>
+                            <input class="btn btn-primary" type="button" value="Remove" th:onclick="removeFromCart([[${product.getProduct().getId()}]])"/>
+                        </td>-->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <!-- /.col-lg-9 -->
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="/products/vendor/jquery/jquery.min.js"></script>
+<script src="/products/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    function checkOrderFields() {
+        let cartNumberRegex = /\d{4}[ ]?\d{4}[ ]?\d{4}[ ]?\d{4}/;
+        let addressRegex = /.{10, 150}/;
+        let exception = 0;
+
+        if($("#paymentOption").val() == "card" && !($("#cardNumber").val()).match(cartNumberRegex)) {
+            $("#cardNumber").removeClass("valid");
+            $("#cardNumber").addClass("invalid");
+            exception++;
+            alert("You entered wrong card number!");
+        }
+        if($("#typeOfDelivery").val() == "deliveryAddress" && $("#deliveryAddress").val() == "") {
+            exception++;
+            alert("Address field cannot be empty!");
+        }
+        if(exception == 0) {
+            $("#buyForm").submit();
+        }
+    }
+
+    function setDeliveryAddress(address) {
+        document.getElementById('deliveryAddress').value = address;
+    }
+
+    function showCardField(paymentOption) {
+        if(paymentOption.value == "cash") {
+            document.getElementById('cardNumber').type='hidden';
+        } else {
+            document.getElementById('cardNumber').type='visible';
+        }
+    }
+
+    function setCardNumber(card) {
+        if(paymentOption.value == "cash") {
+            $("#cardNumber").remove();
+        } else {
+            $("#typeOfPaid").after("</br><input type='text' name='cardNumber' id='cardNumber' placeholder='Card Number'>");
+        }
+    }
+
+    function deliveryType(choice) {
+        if(choice.value == "pickupAddress") {
+            document.getElementById('deliveryAddress').type='hidden';
+            document.getElementById('pickupAddress').style.visibility = 'visible';
+        } else {
+            document.getElementById('deliveryAddress').type='text';
+            document.getElementById('pickupAddress').style.visibility = 'hidden';
+        }
+    }
+</script>
+</body>
+</html>

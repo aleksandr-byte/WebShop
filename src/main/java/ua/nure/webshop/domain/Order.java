@@ -1,6 +1,7 @@
 package ua.nure.webshop.domain;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -8,14 +9,13 @@ import java.util.Date;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(nullable = false, length = 200)
+    @Column(nullable = false, name = "orders_id", length = 200)
     private String ordersId;
     @Column(name = "time_of_order_creation", nullable = false)
-    private Date date;
+    private LocalDateTime date;
     @Column(nullable = false)
     public String status;
-    @Column(name = "status_details", nullable = false, length = 200)
+    @Column(name = "status_details", nullable = true, length = 200)
     public String statusDetails;
     @Column(nullable = false, length = 200)
     public String address;
@@ -24,7 +24,7 @@ public class Order {
     @Column(name = "card_number", nullable = false, length = 40)
     public String cardNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -36,11 +36,11 @@ public class Order {
         this.ordersId = ordersId;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

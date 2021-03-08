@@ -1,5 +1,6 @@
 package ua.nure.webshop.controller;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,15 +10,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import ua.nure.webshop.domain.*;
-import ua.nure.webshop.repos.SmartphoneRepository;
+import ua.nure.webshop.service.CartService;
 import ua.nure.webshop.service.CategoriesService;
 import ua.nure.webshop.service.ParametersService;
 import ua.nure.webshop.service.ProductService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,20 +35,21 @@ public class ProductsController {
     private final ProductService productService;
     private final CategoriesService categoriesService;
     private final ParametersService parametersService;
-    private final SmartphoneRepository smartphoneRepository;
+    private final CartService cartService;
 
-    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService, SmartphoneRepository smartphoneRepository) {
+    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService, CartService cartService) {
         this.productService = productService;
         this.categoriesService = categoriesService;
         this.parametersService = parametersService;
-        this.smartphoneRepository = smartphoneRepository;
+        this.cartService = cartService;
     }
 
     @GetMapping()
     public String index(Model model,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
-        Page<Product> productsPage = productService.findAllProducts(setPageRequest(page, size));
+
+        Page<Products> productsPage = productService.findAllProducts(setPageRequest(page, size));
         model.addAttribute("productPage", productsPage);
 
         Iterable<Categories> categories = categoriesService.findAllCategories();
@@ -67,27 +73,39 @@ public class ProductsController {
                                             @RequestParam(name = "capacities", required = false) Optional<List<String>> capacitiesParams,
                                             @RequestParam(name = "colors", required = false) Optional<List<String>> colorsParams,
                                             @RequestParam(name = "cpus", required = false) Optional<List<String>> cpusParams,
-                                            @RequestParam(name = "displayTypes", required = false) Optional<List<String>> displayTypesParams) {
+                                            @RequestParam(name = "displayTypes", required = false) Optional<List<String>> displayTypesParams,
+                                            @RequestParam(name = "manufacturers", required = false) Optional<List<String>> manufacturers) {
+        Parameters parameters = new Parameters(diagonalParams.orElse(new ArrayList()),
+                resolutionsParams.orElse(new ArrayList()),
+                memorySizesParams.orElse(new ArrayList()),
+                flashMemorySizesParams.orElse(new ArrayList()),
+                batteryCapacitiesParams.orElse(new ArrayList()),
+                capacitiesParams.orElse(new ArrayList()),
+                colorsParams.orElse(new ArrayList()),
+                cpusParams.orElse(new ArrayList()),
+                displayTypesParams.orElse(new ArrayList()),
+                manufacturers.orElse(new ArrayList()));
 
-        Page<Computer> computers = productService.findAllComputers(setPageRequest(page, size));
-        Page<Smartphone> smartphones = productService.findAllSmartphones(setPageRequest(page, size));
-
-        if("computers".equals(categoryName)){
-
-        }
-        //Page<Product> productsPage = productService.findProductsByCategoryName(setPageRequest(page, size), categoryName);
-
-
-        model.addAttribute("productPage", computers);
-
+        Page<Products> productsPage = productService.findProductsByCategoryAndCondition(parameters,categoryName, setPageRequest(page, size));
+        setPageNumbersInModel(productsPage, model);
+        model.addAttribute("productPage", productsPage);
         List<Categories> categories = new ArrayList();
         categories.add(new Categories(categoryName));
         model.addAttribute("categories", categories);
-
-        //setPageNumbersInModel(productsPage, model);
         parametersService.setParametersToModel(model);
 
         return "products/products";
+    }
+
+    @GetMapping("/cart/{productID}")
+    public String addToCart(@PathVariable String productID,
+                            HttpServletResponse response,
+                            Model model,
+                            @RequestParam("page") Optional<Integer> page,
+                            @RequestParam("size") Optional<Integer> size) {
+        cartService.addProductToCart(productID, session());
+        model.addAttribute("number", 1);
+        return index(model, page, size);
     }
 
     private PageRequest setPageRequest(Optional<Integer> page, Optional<Integer> size) {
@@ -96,7 +114,7 @@ public class ProductsController {
         return PageRequest.of(currentPage - 1, pageSize);
     }
 
-    private Model setPageNumbersInModel(Page<Product> productsPage, Model model) {
+    private Model setPageNumbersInModel(Page<Products> productsPage, Model model) {
         int totalPages = productsPage.getTotalPages();
         if (totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
@@ -105,5 +123,10 @@ public class ProductsController {
             model.addAttribute("pageNumbers", pageNumbers);
         }
         return model;
+    }
+
+    public HttpSession session() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        return attr.getRequest().getSession(true);
     }
 }

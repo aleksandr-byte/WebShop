@@ -7,30 +7,49 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "product_orders")
 public class ProductOrder implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(nullable = false, name = "product_orders_id")
+    private Long productOrderID;
     @Column(nullable = false)
     private BigDecimal totalPrice;
     @Column(nullable = false)
     private int quantity;
 
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "product_id")
-    private Product product;
+    private Products products;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "orders_id")
     private Order order;
 
     public ProductOrder() {
     }
 
-    public Product getProduct() {
-        return product;
+    public Products getProduct() {
+        return products;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public Long getProductOrderID() {
+        return productOrderID;
+    }
+
+    public void setProductOrderID(Long productOrderID) {
+        this.productOrderID = productOrderID;
+    }
+
+    public Products getProducts() {
+        return products;
+    }
+
+    public void setProducts(Products products) {
+        this.products = products;
+    }
+
+    public void setProduct(Products products) {
+        this.products = products;
     }
 
     public Order getOrder() {
@@ -56,4 +75,5 @@ public class ProductOrder implements Serializable {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
 }

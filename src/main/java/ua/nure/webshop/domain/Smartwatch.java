@@ -3,8 +3,8 @@ package ua.nure.webshop.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "smartwatches")
-public class Smartwatches extends Product{
+@Table(name = "Smartwatch")
+public class Smartwatch extends Products {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

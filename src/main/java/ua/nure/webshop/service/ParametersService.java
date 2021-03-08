@@ -15,13 +15,13 @@ public interface ParametersService {
 
     Iterable<BatteryCapacity> findAllBatteryCapacities();
 
-    Iterable<Capacity> findAllCapacities();
-
     Iterable<Color> findAllColors();
 
     Iterable<Cpu> findAllCpus();
 
     Iterable<DisplayType> findAllDisplayTypes();
+
+    Iterable<Manufacturer> findAllManufacturers();
 
     void setParametersToModel(Model model);
 

@@ -4,8 +4,8 @@ package ua.nure.webshop.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "smart_phones")
-public class Smartphone extends Product {
+@Table(name = "Smartphone")
+public class Smartphone extends Products {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

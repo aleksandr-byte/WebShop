@@ -40,8 +40,12 @@
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Cart</a>
+                <li class="shop-cart">
+                    <a class="zmdi zmdi-card-travel zmdi-hc-lg" href="/cart"></a>
+                </li>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser != null}">
+                    <a class="nav-link" href="/order">Order
+                    </a>
                 </li>
                 <li class="nav-item" th:if="${#httpServletRequest.remoteUser != null}">
                     <a class="nav-link" th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</a>
@@ -51,7 +55,7 @@
                     <input class="btn btn-primary" type="submit" value="Sign Out"/>
                 </form>
                 <li class="nav-item" th:if="${#httpServletRequest.remoteUser == null}">
-                    <a class="navbar-text" href="/login">Sign in</a>
+                    <a class="nav-link" href="/login">Sign in</a>
                 </li>
             </ul>
         </div>
@@ -60,6 +64,16 @@
 
 <!-- Page Content -->
 <div class="container">
+
+    <div class="border border-light p-3 mb-4" th:if="${productPage.getContent().size() == 0}">
+
+        <div class="d-flex align-items-center justify-content-center" style="height: 350px">
+            <div class="p-2 bd-highlight col-example" th:if="${!attention}">
+                <p class="alert alert-danger" role="alert" th:text="'This product already added!'"/>
+            </div>
+        </div>
+
+    </div>
 
     <div class="row">
 
@@ -74,12 +88,12 @@
             <div class="card" th:if="${categories.size() == 1}">
                 <h1 class="title">Parameters</h1>
                 <article class="filter-group">
-                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside1"
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside0"
                                                    data-abc="true" aria-expanded="false" class="collapsed"> <i
                             class="icon-control fa fa-chevron-down"></i>
                         <h6 class="title">Price </h6>
                     </a></header>
-                    <div class="filter-content collapse" id="collapse_aside1" style="">
+                    <div class="filter-content collapse" id="collapse_aside0" style="">
                         <div class="card-body"><input type="range" class="custom-range" min="0" max="100" name="">
                             <div class="form-row">
                                 <div class="form-group col-md-6"><label>Min</label> <input class="form-control"
@@ -94,6 +108,25 @@
                     </div>
                 </article>
                 <article class="filter-group">
+                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside1"
+                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
+                            class="icon-control fa fa-chevron-down"></i>
+                        <h6 class="title">Manufacturer </h6>
+                    </a></header>
+                    <div class="filter-content" id="collapse_aside1" style="">
+                        <div class="card-body">
+                            <label class="custom-control" th:each="manufacturer : ${manufacturers}">
+                                <input type="checkbox"
+                                       th:id="'manufacturers' + ${manufacturer.getManufacturerId()}"
+                                       th:onclick="setFilterParameters([[${manufacturer.getManufacturerId()}]],[['manufacturers']]);"
+                                       class="custom-control-input"/>
+                                <div class="custom-control-label" th:text="${manufacturer.getManufacturerName()}"/>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')
+                                                        || categories.get(0).getCategoryName().equals('Smartwatch')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside2"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
@@ -111,7 +144,8 @@
                         </div>
                     </div>
                 </article>
-                <article class="filter-group">
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')
+                                                        || categories.get(0).getCategoryName().equals('Smartwatch')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside3"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
@@ -129,11 +163,12 @@
                         </div>
                     </div>
                 </article>
-                <article class="filter-group">
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')
+                                                        || categories.get(0).getCategoryName().equals('Computer')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside4"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title">Memory sizes </h6>
+                        <h6 class="title">RAM</h6>
                     </a></header>
                     <div class="filter-content" id="collapse_aside4" style="">
                         <div class="card-body">
@@ -147,11 +182,13 @@
                         </div>
                     </div>
                 </article>
-                <article class="filter-group">
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')
+                                                        || categories.get(0).getCategoryName().equals('Computer')
+                                                        || categories.get(0).getCategoryName().equals('Smartwatch')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside5"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title">Flash memory sizes </h6>
+                        <h6 class="title">Memory capacities </h6>
                     </a></header>
                     <div class="filter-content" id="collapse_aside5" style="">
                         <div class="card-body">
@@ -165,7 +202,8 @@
                         </div>
                     </div>
                 </article>
-                <article class="filter-group">
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')
+                                                        || categories.get(0).getCategoryName().equals('Smartwatch')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside6"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
@@ -183,25 +221,9 @@
                         </div>
                     </div>
                 </article>
-                <article class="filter-group">
-                    <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside7"
-                                                   data-abc="true" class="collapsed" aria-expanded="false"> <i
-                            class="icon-control fa fa-chevron-down"></i>
-                        <h6 class="title">Memory capacities </h6>
-                    </a></header>
-                    <div class="filter-content" id="collapse_aside7" style="">
-                        <div class="card-body">
-                            <label class="custom-control" th:each="capacity : ${capacities}">
-                                <input type="checkbox"
-                                       th:id="'capacities' + ${capacity.getId()}"
-                                       th:onclick="setFilterParameters([[${capacity.getId()}]],[['capacities']]);"
-                                       class="custom-control-input">
-                                <div class="custom-control-label" th:text="${capacity.getValue()}"/>
-                            </label>
-                        </div>
-                    </div>
-                </article>
-                <article class="filter-group">
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')
+                                                        || categories.get(0).getCategoryName().equals('Computer')
+                                                        || categories.get(0).getCategoryName().equals('Smartwatch')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside8"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
@@ -219,7 +241,8 @@
                         </div>
                     </div>
                 </article>
-                <article class="filter-group">
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')
+                                                        || categories.get(0).getCategoryName().equals('Computer')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside9"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
@@ -237,7 +260,7 @@
                         </div>
                     </div>
                 </article>
-                <article class="filter-group">
+                <article class="filter-group" th:if="${categories.get(0).getCategoryName().equals('Smartphone')}">
                     <header class="card-header"><a href="#" data-toggle="collapse" data-target="#collapse_aside10"
                                                    data-abc="true" class="collapsed" aria-expanded="false"> <i
                             class="icon-control fa fa-chevron-down"></i>
@@ -280,6 +303,8 @@
                         <div class="card-footer">
                             <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
                         </div>
+                        <input class="btn btn-primary" th:name="'buy' + ${product.id}" th:id="'buy' + ${product.id}" type="submit" value="Add to cart"
+                                   th:onclick="addToCart([[${product.getId()}]])"/>
                     </div>
                 </div>
             </div>
@@ -297,14 +322,8 @@
                 </ul>
             </nav>
 
-            <div th:if="${productPage.getContent().size() == 0}">
-                <p class="alert alert-danger" role="alert" th:text="'Nothing to show!'"/>
-                <a class="stretched-link" th:onclick="history.back()"><h1>Back</h1></a>
-                <!-- JS history Back() -->
-            </div>
-
             <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel"
-                 th:if="${productPage.getContent().size() == 0}">
+                 th:if="${categories.size() > 1}">
                 <ol class="carousel-indicators">
                     <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
                     <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
@@ -351,7 +370,18 @@
 <!-- Bootstrap core JavaScript -->
 <script src="/products/vendor/jquery/jquery.min.js"></script>
 <script src="/products/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script language="JavaScript">
+<script th:inline="javascript">
+    Element.prototype.remove = function() {
+        this.parentElement.removeChild(this);
+    }
+    NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+        for(var i = this.length - 1; i >= 0; i--) {
+            if(this[i] && this[i].parentElement) {
+                this[i].parentElement.removeChild(this[i]);
+            }
+        }
+    }
+
     function setFilterParameters(id, paramName) {
         var url = new URL(window.location.href);
         var params = new URLSearchParams(url.searchParams);
@@ -378,17 +408,39 @@
         document.location.href = filterUrl;
     }
 
-        function loadPage() {
-            var url = new URL(window.location.href);
-            var params = new URLSearchParams(url.searchParams);
+    function loadPage() {
 
-            params.forEach(function(filterParam, key) {
-                filterParam = filterParam.split(",");
-                for (var i = 0; i < filterParam.length; i++) {
-                    document.getElementById(key + filterParam[i]).checked = true;
-                }
+        const nameJs = /*[[${session.get('cart')}]]*/;
+        if(nameJs != null){
+            console.log(`Product ids:`);
+            Object.keys(nameJs).forEach(function(value, key) {
+                var buyID = 'buy'.concat(value);
+                document.getElementById(buyID).remove();
+                console.log(`${key} => ${value}`);
             });
         }
+
+        var url = new URL(window.location.href);
+        var params = new URLSearchParams(url.searchParams);
+
+        params.forEach(function (filterParam, key) {
+            filterParam = filterParam.split(",");
+            for (var i = 0; i < filterParam.length; i++) {
+                document.getElementById(key + filterParam[i]).checked = true;
+            }
+        });
+    }
+
+    function addToCart(productID) {
+        $.ajax({
+            type: 'GET',
+            url: '/cart/' + productID,
+            success: function() {
+                var buyID = 'buy'.concat(productID);
+                document.getElementById(buyID).remove();
+            }
+        });
+    }
 </script>
 </body>
 </html>

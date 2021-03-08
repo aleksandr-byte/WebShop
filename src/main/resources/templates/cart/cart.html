@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Cart</title>
+
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/users/fonts/iconic/css/material-design-iconic-font.min.css">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/products/vendor/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/products/css/shop-homepage.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <span class="shop-logo">
+           <!--<i class="zmdi zmdi-usb"></i>-->
+            <i class="zmdi zmdi-github-alt"></i>
+        </span>
+        <a class="navbar-brand" href="/">Best buy</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/cart">Cart
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/order">Order
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser != null}">
+                    <a class="nav-link" th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</a>
+                </li>
+                <form class="nav-item" th:action="@{/logout}" th:if="${#httpServletRequest.remoteUser != null}"
+                      method="post">
+                    <input class="btn btn-primary" type="submit" value="Sign Out"/>
+                </form>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser == null}">
+                    <a class="navbar-text" href="/login">Sign in</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+
+    <div class="border border-light p-3 mb-4">
+
+        <div class="d-flex align-items-center justify-content-center" style="height: 350px">
+            <div class="p-2 bd-highlight col-example">
+                <table class="table table-striped" th:if="${productOrders != null}">
+                    <thead>
+                    <tr>
+                        <th scope="col">Product name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                        <th>
+                            <form th:action="${'/cart/removeall'}"
+                                  method="GET">
+                                <input class="btn btn-warning" type="submit" value="Remove all"/>
+                            </form>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product : ${productOrders}">
+                        <th scope="row" th:text="${product.getProduct().getName()}"></th>
+                        <td>
+                            <input type="number" name="quantity" th:id="'quantity' + ${product.getProduct().getId()}" th:value="${product.getQuantity()}" min="1" max="40" step="1" th:onchange="changeQuantity([[${product.getProduct().getId()}]])">
+                        </td>
+                        <td th:text="${product.getTotalPrice()}"></td>
+                        <td>
+                            <form th:action="${'/cart/remove/' + product.getProduct().getId()}"
+                                  method="GET">
+                                <input class="btn btn-warning" type="submit" value="Remove"/>
+                            </form>
+                        </td>
+                        <!--<td>
+                            <input class="btn btn-primary" type="button" value="Remove" th:onclick="removeFromCart([[${product.getProduct().getId()}]])"/>
+                        </td>-->
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:if="${productOrders != null}">
+                    <form th:action="${'/cart/confirmorder'}"
+                          method="GET">
+                        <input class="btn btn-primary" type="submit" value="Confirm order"/>
+                    </form>
+                </div>
+            </div>
+            <div class="p-2 bd-highlight col-example" th:if="${productOrders == null}">
+                <p class="alert alert-danger" role="alert" th:text="'Nothing to show!'"/>
+                <p class="btn btn-primary" role="alert" th:onclick="goToTheMainPage()" th:text="'Go back'"/>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- /.container -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="/products/vendor/jquery/jquery.min.js"></script>
+<script src="/products/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    Element.prototype.remove = function() {
+        this.parentElement.removeChild(this);
+    }
+    NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+        for(var i = this.length - 1; i >= 0; i--) {
+            if(this[i] && this[i].parentElement) {
+                this[i].parentElement.removeChild(this[i]);
+            }
+        }
+    }
+
+    function removeFromCart(productID) {
+        $.ajax({
+            type: 'GET',
+            url: '/cart/remove/' + productID
+        });
+    }
+
+    function goToTheMainPage() {
+        window.location.replace("/");
+    }
+
+    function changeQuantity(productID) {
+        var quantity = document.getElementById('quantity' + productID).value;
+        $.ajax({
+            type: 'GET',
+            url: '/cart/changequantity/' + productID + '/' + quantity
+        });
+    }
+</script>
+</body>
+</html>

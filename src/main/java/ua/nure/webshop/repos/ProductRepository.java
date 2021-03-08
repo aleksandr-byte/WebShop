@@ -3,11 +3,12 @@ package ua.nure.webshop.repos;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import ua.nure.webshop.domain.Product;
+import ua.nure.webshop.domain.Products;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Products, Long> {
 
-    Page<Product> findAll(Pageable pageable);
+    Page<Products> findAll(Pageable pageable);
 
-    Page<Product> findAllByCategoryCategoryName(Pageable pageable, String categoryName);
+    Page<Products> findAllByCategoryCategoryName(Pageable pageable, String categoryName);
+
 }
