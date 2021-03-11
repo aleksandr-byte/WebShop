@@ -15,6 +15,7 @@ import ua.nure.webshop.domain.Role;
 import ua.nure.webshop.domain.User;
 import ua.nure.webshop.repos.ProductOrderRepository;
 import ua.nure.webshop.service.UserService;
+import ua.nure.webshop.utils.PasswordGenerator;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
@@ -92,7 +93,7 @@ public class OrderController {
         Set<Role> roleSet = new HashSet();
         roleSet.add(Role.USER);
         guest.setRoles(roleSet);
-        guest.setPassword(userService.generateRandomSpecialCharacters());
+        guest.setPassword(userService.generatePassword());
         return guest;
     }
 }

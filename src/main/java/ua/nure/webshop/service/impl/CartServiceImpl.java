@@ -38,7 +38,6 @@ public class CartServiceImpl implements CartService {
         }
         cart.put(productID, 1);
         clearCart(session);
-        System.out.println(cart);
         session.setAttribute("cart", cart);
     }
 

@@ -1,10 +1,208 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Product refactor</title>
+
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/users/fonts/iconic/css/material-design-iconic-font.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="/products/vendor/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="/products/css/shop-homepage.css" type="text/css" rel="stylesheet">
 </head>
 <body>
-    <h1>Hello admin!</h1>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <span class="shop-logo">
+           <!--<i class="zmdi zmdi-usb"></i>-->
+            <i class="zmdi zmdi-github-alt"></i>
+        </span>
+        <a class="navbar-brand" href="/">Best buy</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/admin">Edit
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser != null}">
+                    <a class="nav-link" th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</a>
+                </li>
+                <form class="nav-item" th:action="@{/logout}" th:if="${#httpServletRequest.remoteUser != null}"
+                      method="post">
+                    <input class="btn btn-primary" type="submit" value="Sign Out"/>
+                </form>
+                <li class="nav-item" th:if="${#httpServletRequest.remoteUser == null}">
+                    <a class="nav-link" href="/login">Sign in</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-lg-3">
+            <div class="list-group">
+
+            </div>
+        </div>
+            <!-- /.col-lg-3 -->
+        <div class="col-lg-9">
+                <div class="row">
+                    <div class="list-group">
+                    <form th:action="${'/admin/' + product.id}" th:id="editProduct">
+
+                        <div class="list-group-item">
+                            <input type="text" name="name" th:value="${product.name}" th:onchange="change()"/>
+                        </div>
+
+                        <div class="list-group-item">
+                            <input type="text" name="price" th:value="${product.price}" th:onchange="change()"/>
+                        </div>
+
+                        <div class="list-group-item">
+                            <input type="text" name="description" th:value="${product.description}" th:onchange="change()"/>
+                        </div>
+
+                        <div class="list-group-item">
+                            <select th:name="manufacturer" class="form-select" th:onchange="change()">
+                                <option th:each="manufacturer : ${manufacturers}"
+                                        th:selected="${manufacturer.getManufacturerId()==product.getManufacturer_id()}"
+                                        th:value="${manufacturer.getManufacturerId()}"
+                                        th:text="${manufacturer.getManufacturerName()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item" th:if="${product.getCategory().getCategoryName().equals('Smartphone')
+                                                        || product.getCategory().getCategoryName().equals('Smartwatch')}">
+                            <select th:name="diagonal" class="form-select" th:onchange="change()">
+                                <option th:each="diagonal : ${diagonals}"
+                                        th:selected="${diagonal.getId()==product.getDiagonal_id()}"
+                                        th:value="${diagonal.getId()}"
+                                        th:text="${diagonal.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item" th:if="${product.getCategory().getCategoryName().equals('Smartphone')
+                                                        || product.getCategory().getCategoryName().equals('Smartwatch')}">
+                            <select th:name="resolution" class="form-select" th:onchange="change()">
+                                <option th:each="resolution : ${resolutions}"
+                                        th:selected="${resolution.getId()==product.getResolution_id()}"
+                                        th:value="${resolution.getId()}"
+                                        th:text="${resolution.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item" th:if="${product.getCategory().getCategoryName().equals('Smartphone')
+                                                        || product.getCategory().getCategoryName().equals('Computer')}">
+                            <select th:name="memorySize" class="form-select" th:onchange="change()">
+                                <option th:each="memorySize : ${memorySizes}"
+                                        th:selected="${memorySize.getId()==product.getMemory_size_id()}"
+                                        th:value="${memorySize.getId()}"
+                                        th:text="${memorySize.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item">
+                            <select th:name="flashMemorySize" class="form-select" th:onchange="change()">
+                                <option th:each="flashMemorySize : ${flashMemorySizes}"
+                                        th:selected="${flashMemorySize.getId()==product.getFlash_memory_size_id()}"
+                                        th:value="${flashMemorySize.getId()}"
+                                        th:text="${flashMemorySize.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item" th:if="${product.getCategory().getCategoryName().equals('Smartphone')
+                                                        || product.getCategory().getCategoryName().equals('Smartwatch')}">
+                            <select th:name="batteryCapacity" class="form-select" th:onchange="change()">
+                                <option th:each="batteryCapacity : ${batteryCapacities}"
+                                        th:selected="${batteryCapacity.getId()==product.getBattery_capacity_id()}"
+                                        th:value="${batteryCapacity.getId()}"
+                                        th:text="${batteryCapacity.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item">
+                            <select th:name="color" class="form-select" th:onchange="change()">
+                                <option th:each="color : ${colors}"
+                                        th:selected="${color.getId()==product.getColor_id()}"
+                                        th:value="${color.getId()}"
+                                        th:text="${color.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item" th:if="${product.getCategory().getCategoryName().equals('Smartphone')
+                                                        || product.getCategory().getCategoryName().equals('Computer')}">
+                            <select th:name="cpu" class="form-select" th:onchange="change()">
+                                <option th:each="cpu : ${cpus}"
+                                        th:selected="${cpu.getId()==product.getCpu_id()}"
+                                        th:value="${cpu.getId()}"
+                                        th:text="${cpu.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="list-group-item" th:if="${product.getCategory().getCategoryName().equals('Smartphone')}">
+                            <select th:name="displayType" class="form-select" th:onchange="change()">
+                                <option th:each="displayType : ${displayTypes}"
+                                        th:selected="${displayType.getId()==product.getDisplay_type_id()}"
+                                        th:value="${displayType.getId()}"
+                                        th:text="${displayType.getValue()}">
+                                </option>
+                            </select>
+                        </div>
+
+                    </form>
+                    <form th:action="@{/admin/update}" th:method="post">
+                        <div class="list-group-item">
+                            <input type="submit" value="Update">
+                        </div>
+                    </form>
+                    <form th:action="@{/admin/add}" th:method="post">
+                        <div class="list-group-item">
+                            <input type="submit" value="Add">
+                        </div>
+                    </form>
+                    </div>
+                </div>
+        </div>
+        <!-- /.col-lg-9 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+
+<!-- Bootstrap core JavaScript -->
+<script src="/products/vendor/jquery/jquery.min.js"></script>
+<script src="/products/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+    function change(){
+        $("#editProduct").submit();
+    }
+</script>
 </body>
 </html>

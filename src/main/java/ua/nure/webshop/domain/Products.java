@@ -18,17 +18,21 @@ public class Products {
     private BigDecimal price;
     @Column(nullable = false, length = 1000)
     private String description;
-    @Column(name = "image_name", nullable = false, length = 100)
+    @Column(name = "image_name")
     private String imageName;
+    @Column(name = "category_id")
+    private Long category_id;
+    @Column(name = "manufacturer_id")
+    private Long manufacturer_id;
     @Transient
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Categories category;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "manufacturer_id")
+    @JoinColumn(name = "manufacturer_id", insertable = false, updatable = false)
     private Manufacturer manufacturer;
 
     public Products() {
@@ -53,6 +57,22 @@ public class Products {
 
     public String getName() {
         return name;
+    }
+
+    public Long getCategory_id() {
+        return category_id;
+    }
+
+    public void setCategory_id(Long category_id) {
+        this.category_id = category_id;
+    }
+
+    public Long getManufacturer_id() {
+        return manufacturer_id;
+    }
+
+    public void setManufacturer_id(Long manufacturer_id) {
+        this.manufacturer_id = manufacturer_id;
     }
 
     public void setName(String name) {
@@ -105,5 +125,19 @@ public class Products {
 
     public void setManufacturer(Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
+    }
+
+    @Override
+    public String toString() {
+        return "Products{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                ", imageName='" + imageName + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", category=" + category +
+                ", manufacturer=" + manufacturer +
+                '}';
     }
 }

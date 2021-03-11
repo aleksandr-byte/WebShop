@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.CharacterData;
 import ua.nure.webshop.domain.User;
 import ua.nure.webshop.repos.UserRepository;
+import ua.nure.webshop.utils.PasswordGenerator;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -27,9 +28,12 @@ public class UserService implements UserDetailsService {
         repository.save(user);
     }
 
-    public String generateRandomSpecialCharacters() {
-        RandomStringGenerator pwdGenerator = new RandomStringGenerator();
-        pwdGenerator.setNumOfUpperLimit(3);
-        return pwdGenerator.generateByRegex("!@#$%^&*()_+");
+    public String generatePassword() {
+        PasswordGenerator passwordGenerator = new PasswordGenerator.PasswordGeneratorBuilder()
+                .useDigits(true)
+                .useLower(true)
+                .useUpper(true)
+                .build();
+        return passwordGenerator.generate(8);
     }
 }

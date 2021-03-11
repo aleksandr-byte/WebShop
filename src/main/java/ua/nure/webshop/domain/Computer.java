@@ -6,38 +6,64 @@ import javax.persistence.*;
 @Table(name = "Computer")
 public class Computer extends Products {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "product_id", nullable = false)
-    private Long id;
+    @Column(name = "flash_memory_size_id")
+    private Long flash_memory_size_id;
+    @Column(name = "color_id")
+    private Long color_id;
+    @Column(name = "memory_size_id")
+    private Long memory_size_id;
+    @Column(name = "cpu_id")
+    private Long cpu_id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "flash_memory_size_id")
+    @JoinColumn(name = "flash_memory_size_id", insertable = false, updatable = false)
     private FlashMemorySize flashMemorySize;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "color_id")
+    @JoinColumn(name = "color_id", insertable = false, updatable = false)
     private Color color;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "memory_size_id")
+    @JoinColumn(name = "memory_size_id", insertable = false, updatable = false)
     private MemorySize memorySize;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "cpu_id")
+    @JoinColumn(name = "cpu_id", insertable = false, updatable = false)
     private Cpu cpu;
 
     public Computer() {
     }
 
-    @Override
-    public Long getId() {
-        return id;
+    public Long getFlash_memory_size_id() {
+        return flash_memory_size_id;
     }
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
+    public void setFlash_memory_size_id(Long flash_memory_size_id) {
+        this.flash_memory_size_id = flash_memory_size_id;
+    }
+
+    public Long getColor_id() {
+        return color_id;
+    }
+
+    public void setColor_id(Long color_id) {
+        this.color_id = color_id;
+    }
+
+    public Long getMemory_size_id() {
+        return memory_size_id;
+    }
+
+    public void setMemory_size_id(Long memory_size_id) {
+        this.memory_size_id = memory_size_id;
+    }
+
+    public Long getCpu_id() {
+        return cpu_id;
+    }
+
+    public void setCpu_id(Long cpu_id) {
+        this.cpu_id = cpu_id;
     }
 
     public FlashMemorySize getFlashMemorySize() {

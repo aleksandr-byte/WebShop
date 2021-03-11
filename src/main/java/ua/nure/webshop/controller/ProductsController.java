@@ -50,6 +50,7 @@ public class ProductsController {
                         @RequestParam("size") Optional<Integer> size) {
 
         Page<Products> productsPage = productService.findAllProducts(setPageRequest(page, size));
+        model.addAttribute("products", productsPage.getContent());
         model.addAttribute("productPage", productsPage);
 
         Iterable<Categories> categories = categoriesService.findAllCategories();
@@ -85,8 +86,20 @@ public class ProductsController {
                 cpusParams.orElse(new ArrayList()),
                 displayTypesParams.orElse(new ArrayList()),
                 manufacturers.orElse(new ArrayList()));
-
-        Page<Products> productsPage = productService.findProductsByCategoryAndCondition(parameters,categoryName, setPageRequest(page, size));
+        Page<Products> productsPage = productService.findProductsByCategoryAndCondition(parameters, categoryName, setPageRequest(page, size));
+        if ("Computer".equals(categoryName)) {
+            List<Computer> computers = (List<Computer>) (List<?>) productsPage.getContent();
+            model.addAttribute("products", computers);
+        }
+        if ("Smartwatch".equals(categoryName)) {
+            List<Smartwatch> smartwatches = (List<Smartwatch>) (List<?>) productsPage.getContent();
+            model.addAttribute("products", smartwatches);
+        }
+        if ("Smartphone".equals(categoryName)) {
+            List<Smartphone> smartphones = (List<Smartphone>) (List<?>) productsPage.getContent();
+            model.addAttribute("products", smartphones);
+        }
+        System.out.println(productsPage.getContent());
         setPageNumbersInModel(productsPage, model);
         model.addAttribute("productPage", productsPage);
         List<Categories> categories = new ArrayList();
@@ -99,12 +112,10 @@ public class ProductsController {
 
     @GetMapping("/cart/{productID}")
     public String addToCart(@PathVariable String productID,
-                            HttpServletResponse response,
                             Model model,
                             @RequestParam("page") Optional<Integer> page,
                             @RequestParam("size") Optional<Integer> size) {
         cartService.addProductToCart(productID, session());
-        model.addAttribute("number", 1);
         return index(model, page, size);
     }
 

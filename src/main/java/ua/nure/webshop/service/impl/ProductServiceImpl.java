@@ -39,6 +39,23 @@ public class ProductServiceImpl implements ProductService {
         this.smartwatchesRepository = smartwatchesRepository;
     }
 
+
+
+    @Override
+    public Products findProductByID(Long id) {
+        return productRepository.findProductsById(id);
+    }
+
+    @Override
+    public void createProduct(Products products) {
+        productRepository.save(products);
+    }
+
+    @Override
+    public void updateProduct(Products products) {
+        productRepository.save(products);
+    }
+
     @Override
     public Page<Products> findAllProducts(PageRequest pageRequest) {
         Page<Products> products = productRepository.findAll(pageRequest);
