@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,11 +23,17 @@ public class User implements UserDetails {
     private String email;
     @Column(nullable = false)
     private boolean active;
+    @Column(name = "role_id", nullable = false)
+    private Long roleID;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "role_id"))
+    @CollectionTable(name = "roles", joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "role_id")})
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    private Set<Role> role;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private List<Grade> gradeList;
 
     public Long getId() {
         return id;
@@ -94,10 +101,26 @@ public class User implements UserDetails {
     }
 
     public Set<Role> getRoles() {
-        return roles;
+        return role;
     }
 
     public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+        this.role = roles;
+    }
+
+    public Long getRoleID() {
+        return roleID;
+    }
+
+    public List<Grade> getUsersProductsList() {
+        return gradeList;
+    }
+
+    public void setUsersProductsList(List<Grade> gradeList) {
+        this.gradeList = gradeList;
+    }
+
+    public void setRoleID(Long roleID) {
+        this.roleID = roleID;
     }
 }

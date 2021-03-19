@@ -1,11 +1,11 @@
 package ua.nure.webshop.service;
 
-import net.moznion.random.string.RandomStringGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.CharacterData;
 import ua.nure.webshop.domain.User;
 import ua.nure.webshop.repos.UserRepository;
 import ua.nure.webshop.utils.PasswordGenerator;
@@ -14,6 +14,8 @@ import ua.nure.webshop.utils.PasswordGenerator;
 public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository repository) {
         this.repository = repository;
@@ -25,6 +27,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void addUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         repository.save(user);
     }
 
@@ -34,6 +37,6 @@ public class UserService implements UserDetailsService {
                 .useLower(true)
                 .useUpper(true)
                 .build();
-        return passwordGenerator.generate(8);
+        return passwordEncoder.encode(passwordGenerator.generate(8));
     }
 }

@@ -1,15 +1,12 @@
 package ua.nure.webshop.controller;
 
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import ua.nure.webshop.domain.*;
@@ -18,10 +15,7 @@ import ua.nure.webshop.service.CategoriesService;
 import ua.nure.webshop.service.ParametersService;
 import ua.nure.webshop.service.ProductService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -87,19 +81,7 @@ public class ProductsController {
                 displayTypesParams.orElse(new ArrayList()),
                 manufacturers.orElse(new ArrayList()));
         Page<Products> productsPage = productService.findProductsByCategoryAndCondition(parameters, categoryName, setPageRequest(page, size));
-        if ("Computer".equals(categoryName)) {
-            List<Computer> computers = (List<Computer>) (List<?>) productsPage.getContent();
-            model.addAttribute("products", computers);
-        }
-        if ("Smartwatch".equals(categoryName)) {
-            List<Smartwatch> smartwatches = (List<Smartwatch>) (List<?>) productsPage.getContent();
-            model.addAttribute("products", smartwatches);
-        }
-        if ("Smartphone".equals(categoryName)) {
-            List<Smartphone> smartphones = (List<Smartphone>) (List<?>) productsPage.getContent();
-            model.addAttribute("products", smartphones);
-        }
-        System.out.println(productsPage.getContent());
+        model.addAttribute("products", productsPage.getContent());
         setPageNumbersInModel(productsPage, model);
         model.addAttribute("productPage", productsPage);
         List<Categories> categories = new ArrayList();
@@ -117,6 +99,18 @@ public class ProductsController {
                             @RequestParam("size") Optional<Integer> size) {
         cartService.addProductToCart(productID, session());
         return index(model, page, size);
+    }
+
+    @PostMapping("/products/grade")
+    public String setGrade(@AuthenticationPrincipal User user,
+                           @RequestParam("productID") Optional<String> productID,
+                           @RequestParam("grade") Optional<String> grade){
+
+        System.out.println("Grade" + grade.get());
+        System.out.println("ProductID" + productID.get());
+        System.out.println("UserID" + user.getId());
+
+        return "redirect:/";
     }
 
     private PageRequest setPageRequest(Optional<Integer> page, Optional<Integer> size) {

@@ -8,10 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ua.nure.webshop.builder.SqlBuilder;
 import ua.nure.webshop.domain.*;
-import ua.nure.webshop.repos.ComputerRepository;
 import ua.nure.webshop.repos.ProductRepository;
-import ua.nure.webshop.repos.SmartphoneRepository;
-import ua.nure.webshop.repos.SmartwatchesRepository;
 import ua.nure.webshop.service.ProductService;
 
 import javax.persistence.EntityManager;
@@ -25,24 +22,18 @@ public class ProductServiceImpl implements ProductService {
 
     @PersistenceContext
     private EntityManager entityManager;
-    @Value("${images.folder.path}")
+    @Value("${images.path}")
     private String folderPath;
     private final ProductRepository productRepository;
-    private final SmartphoneRepository smartphoneRepository;
-    private final ComputerRepository computerRepository;
-    private final SmartwatchesRepository smartwatchesRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, SmartphoneRepository smartphoneRepository, ComputerRepository computerRepository, SmartwatchesRepository smartwatchesRepository) {
+    public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.smartphoneRepository = smartphoneRepository;
-        this.computerRepository = computerRepository;
-        this.smartwatchesRepository = smartwatchesRepository;
     }
-
-
 
     @Override
     public Products findProductByID(Long id) {
+        Products product = productRepository.findProductsById(id);
+        product.setImageUrl(folderPath + product.getImageName());
         return productRepository.findProductsById(id);
     }
 
@@ -63,42 +54,20 @@ public class ProductServiceImpl implements ProductService {
         return products;
     }
 
-    @Override
-    public Page<Products> findProductsByCategoryName(PageRequest pageRequest, String categoryName) {
-        Page<Products> products = productRepository.findAllByCategoryCategoryName(pageRequest, categoryName);
+/*    @Override
+    public Page<Products> findProductsByCategoryName(PageRequest pageRequest) {
+        Page<Products> products = productRepository.findAllByCategoryCategoryName(pageRequest);
         setImageUrl(products.getContent());
         return products;
-    }
+    }*/
 
-    @Override
-    public Page<Smartphone> findAllSmartphones(PageRequest pageRequest) {
-        Page<Smartphone> smartphones = smartphoneRepository.findAll(pageRequest);
-        setImageUrl((List<Products>) (List<?>) smartphones.getContent());
-        return smartphones;
-    }
-
-    @Override
-    public Page<Computer> findAllComputers(PageRequest pageRequest) {
-        Page<Computer> computers = computerRepository.findAll(pageRequest);
-        setImageUrl((List<Products>) (List<?>) computers.getContent());
-        return computers;
-    }
-
-    public Page<Products> findProductsByCategoryAndCondition(Parameters parameters,
-                                                   String categoryName,
-                                                   PageRequest pageRequest) {
+    public Page<Products> findProductsByCategoryAndCondition(Parameters parameters, String categoryName,
+                                                             PageRequest pageRequest) {
         SqlBuilder sqlBuilder = new SqlBuilder(parameters, categoryName);
         TypedQuery<Products> query = entityManager.createQuery(sqlBuilder.getQuery(), Products.class);
         List<Products> products = query.getResultList();
         setImageUrl(products);
         return pagedList(pageRequest, products);
-    }
-
-    @Override
-    public Page<Smartwatch> findAllSmartwatches(PageRequest pageRequest) {
-        Page<Smartwatch> smartwatches = smartwatchesRepository.findAll(pageRequest);
-        setImageUrl((List<Products>) (List<?>) smartwatches.getContent());
-        return smartwatches;
     }
 
     private void setImageUrl(List<Products> products) {

@@ -3,9 +3,14 @@ package ua.nure.webshop.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Smartwatch")
-public class Smartwatch extends Products {
+@Table(name = "Characteristics")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Characteristics {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "product_id", nullable = false)
+    private Long id;
     @Column(name = "diagonal_id")
     private Long diagonal_id;
     @Column(name = "resolution_id")
@@ -16,6 +21,12 @@ public class Smartwatch extends Products {
     private Long battery_capacity_id;
     @Column(name = "color_id")
     private Long color_id;
+    @Column(name = "display_type_id")
+    private Long display_type_id;
+    @Column(name = "memory_size_id")
+    private Long memory_size_id;
+    @Column(name = "cpu_id")
+    private Long cpu_id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "diagonal_id", insertable = false, updatable = false)
@@ -36,6 +47,29 @@ public class Smartwatch extends Products {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "color_id", insertable = false, updatable = false)
     private Color color;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "display_type_id", insertable = false, updatable = false)
+    private DisplayType displayType;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "memory_size_id", insertable = false, updatable = false)
+    private MemorySize memorySize;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "cpu_id", insertable = false, updatable = false)
+    private Cpu cpu;
+
+    public Characteristics() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getDiagonal_id() {
         return diagonal_id;
@@ -77,6 +111,30 @@ public class Smartwatch extends Products {
         this.color_id = color_id;
     }
 
+    public Long getDisplay_type_id() {
+        return display_type_id;
+    }
+
+    public void setDisplay_type_id(Long display_type_id) {
+        this.display_type_id = display_type_id;
+    }
+
+    public Long getMemory_size_id() {
+        return memory_size_id;
+    }
+
+    public void setMemory_size_id(Long memory_size_id) {
+        this.memory_size_id = memory_size_id;
+    }
+
+    public Long getCpu_id() {
+        return cpu_id;
+    }
+
+    public void setCpu_id(Long cpu_id) {
+        this.cpu_id = cpu_id;
+    }
+
     public Diagonal getDiagonal() {
         return diagonal;
     }
@@ -116,4 +174,29 @@ public class Smartwatch extends Products {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    public DisplayType getDisplayType() {
+        return displayType;
+    }
+
+    public void setDisplayType(DisplayType displayType) {
+        this.displayType = displayType;
+    }
+
+    public MemorySize getMemorySize() {
+        return memorySize;
+    }
+
+    public void setMemorySize(MemorySize memorySize) {
+        this.memorySize = memorySize;
+    }
+
+    public Cpu getCpu() {
+        return cpu;
+    }
+
+    public void setCpu(Cpu cpu) {
+        this.cpu = cpu;
+    }
+
 }

@@ -56,9 +56,6 @@
                 <div class="container-login100-form-btn"><input class="login100-form-btn" type="submit"
                                                                 value="Sign Up"/></div>
             </form>
-            <div th:if="${message != null}">
-                <p th:text="${message}"></p>
-            </div>
         </div>
     </div>
 </div>
@@ -81,6 +78,11 @@
 <!--===============================================================================================-->
 <script src="/users/vendor/countdowntime/countdowntime.js"></script>
 <!--===============================================================================================-->
-<script src="/users/js/main.js"></script>
+<script th:inline="javascript">
+    var message = /*[[${message}]]*/;
+    if(message != null) {
+        alert(message);
+    }
+</script>
 </body>
 </html>

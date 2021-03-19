@@ -4,18 +4,15 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "products")
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Products {
+@Table(name = "Products")
+public class Products extends Characteristics{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "product_id", nullable = false)
-    private Long id;
     @Column(nullable = false, length = 20, unique = true)
     private String name;
     @Column(nullable = false)
     private BigDecimal price;
+    @Column(nullable = false)
+    private BigDecimal rating;
     @Column(nullable = false, length = 1000)
     private String description;
     @Column(name = "image_name")
@@ -45,14 +42,6 @@ public class Products {
         this.imageName = imageName;
         this.category = category;
         this.manufacturer = manufacturer;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -127,10 +116,17 @@ public class Products {
         this.manufacturer = manufacturer;
     }
 
+    public BigDecimal getRating() {
+        return rating;
+    }
+
+    public void setRating(BigDecimal rating) {
+        this.rating = rating;
+    }
+
     @Override
     public String toString() {
         return "Products{" +
-                "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", description='" + description + '\'' +

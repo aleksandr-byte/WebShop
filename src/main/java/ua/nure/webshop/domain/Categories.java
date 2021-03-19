@@ -3,7 +3,7 @@ package ua.nure.webshop.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "categories")
+@Table(name = "Categories")
 public class Categories {
 
     @Id

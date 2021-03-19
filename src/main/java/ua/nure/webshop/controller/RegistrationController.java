@@ -1,5 +1,6 @@
 package ua.nure.webshop.controller;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +15,11 @@ import java.util.Collections;
 public class RegistrationController {
 
     private UserRepository userRepo;
+    private PasswordEncoder passwordEncoder;
 
-    public RegistrationController(UserRepository userRepo) {
+    public RegistrationController(UserRepository userRepo, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/registration")
@@ -32,7 +35,8 @@ public class RegistrationController {
             model.addAttribute("message", "User exists!");
             return "users/registration";
         }
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoleID(Long.valueOf(2));
         user.setRoles(Collections.singleton(Role.USER));
         user.setActive(true);
         userRepo.save(user);

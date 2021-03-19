@@ -10,6 +10,14 @@
 
     <title>Products</title>
 
+    <!-- Bootstrap core JavaScript -->
+    <script src="/products/vendor/jquery/jquery.min.js"></script>
+    <script src="/products/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rateYo/2.3.2/jquery.rateyo.min.js"></script>
+
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="/users/fonts/iconic/css/material-design-iconic-font.min.css">
 
@@ -40,12 +48,8 @@
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>
-                <li class="shop-cart">
+                <li sec:authorize="hasAuthority('USER')" class="shop-cart">
                     <a class="zmdi zmdi-card-travel zmdi-hc-lg" href="/cart"></a>
-                </li>
-                <li class="nav-item" th:if="${#httpServletRequest.remoteUser != null}">
-                    <a class="nav-link" href="/order">Order
-                    </a>
                 </li>
                 <li class="nav-item" th:if="${#httpServletRequest.remoteUser != null}">
                     <a class="nav-link" th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</a>
@@ -67,11 +71,11 @@
 
     <div class="border border-light p-3 mb-4" th:if="${productPage.getContent().size() == 0}">
 
-        <div class="d-flex align-items-center justify-content-center" style="height: 350px">
+      <!--  <div class="d-flex align-items-center justify-content-center" style="height: 350px">
             <div class="p-2 bd-highlight col-example" th:if="${!attention}">
                 <p class="alert alert-danger" role="alert" th:text="'This product already added!'"/>
             </div>
-        </div>
+        </div>-->
 
     </div>
 
@@ -299,29 +303,62 @@
                             <p th:text="${product.getManufacturer().getManufacturerName()}"/></p>
                             <p class="card-text">
                             <p th:text="${product.description}"/></p>
-                             Diagonal <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
+                            <p th:if="${categories.size() == 1
+                                    && (product.getCategory().getCategoryName().equals('Smartphone')
+                                    || product.getCategory().getCategoryName().equals('Smartwatch'))
+                                    }"
                                 th:text="${product.getDiagonal().getValue()}"/></p>
-                            <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
+                            <p th:if="${categories.size() == 1
+                                    && (product.getCategory().getCategoryName().equals('Smartphone')
+                                    || product.getCategory().getCategoryName().equals('Smartwatch'))
+                                    }"
                                th:text="${product.getResolution().getValue()}"/></p>
-                            <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
+                            <p th:if="${categories.size() == 1}"
                                th:text="${product.getFlashMemorySize().getValue()}"/></p>
-                            <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
+                            <p th:if="${categories.size() == 1
+                                    && (product.getCategory().getCategoryName().equals('Smartphone')
+                                    || product.getCategory().getCategoryName().equals('Smartwatch'))
+                                    }"
                                th:text="${product.getBatteryCapacity().getValue()}"/></p>
-                            <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
+                            <p th:if="${categories.size() == 1}"
                                th:text="${product.getColor().getValue()}"/></p>
                             <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
                                th:text="${product.getDisplayType().getValue()}"/></p>
-                            <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
+                            <p th:if="${categories.size() == 1
+                                    && (product.getCategory().getCategoryName().equals('Smartphone')
+                                    || product.getCategory().getCategoryName().equals('Computer'))
+                                    }"
                                th:text="${product.getMemorySize().getValue()}"/></p>
-                            <p th:if="${categories.size() == 1 && product.getCategory().getCategoryName().equals('Smartphone')}"
+                            <p th:if="${categories.size() == 1
+                                    && (product.getCategory().getCategoryName().equals('Smartphone')
+                                    || product.getCategory().getCategoryName().equals('Computer'))
+                                    }"
                                th:text="${product.getCpu().getValue()}"/></p>
                         </div>
+                        <form th:id="gradeForm" sec:authorize="hasAuthority('USER')" th:action="@{/products/grade}" method="post">
+                            <input type="hidden" th:id="'grade'" th:name="grade" th:value="${product.getId()}">
+                            <input type="hidden" th:name="productID" th:value="${product.rating}">
+                        </form>
                         <div class="card-footer">
-                            <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
+                            <div th:id="${product.getId()}"></div>
+                            <script th:inline="javascript">
+                                /*<![CDATA[*/
+                                $(function () {$('#' + /*[[${product.getId()}]]*/).rateYo({
+                                    rating: /*[[${product.rating}]]*/,
+                                    ratedFill: "#00FF00",
+                                    onSet: function (rating, rateYoInstance) {
+                                        document.getElementById('grade').value = rating;
+                                        $("#gradeForm").submit();
+                                    }
+                                    });
+                                });
+                                /*]]>*/
+                            </script>
                         </div>
-                        <input class="btn btn-primary" th:name="'buy' + ${product.id}" th:id="'buy' + ${product.id}" type="submit" value="Add to cart"
+                        <input sec:authorize="hasAuthority('USER') || hasAuthority('null')" class="btn btn-primary" th:name="'buy' + ${product.id}" th:id="'buy' + ${product.id}" type="submit" value="Add to cart"
                                    th:onclick="addToCart([[${product.getId()}]])"/>
-                        <form sec:authorize="hasAnyAuthority('ADMIN')" th:action="${'/admin/' + product.id}">
+                        <form sec:authorize="hasAuthority('ADMIN')" th:action="@{/admin/change}" method="post">
+                            <input type="hidden" th:name="productID" th:value="${product.getId()}">
                             <input type="submit" class="btn btn-primary" value="Choose"/>
                         </form>
                     </div>
@@ -386,9 +423,6 @@
     <!-- /.container -->
 </footer>
 
-<!-- Bootstrap core JavaScript -->
-<script src="/products/vendor/jquery/jquery.min.js"></script>
-<script src="/products/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script th:inline="javascript">
     Element.prototype.remove = function() {
         this.parentElement.removeChild(this);

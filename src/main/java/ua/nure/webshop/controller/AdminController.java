@@ -1,24 +1,23 @@
 package ua.nure.webshop.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import ua.nure.webshop.domain.Computer;
+import org.springframework.web.multipart.MultipartFile;
 import ua.nure.webshop.domain.Products;
-import ua.nure.webshop.domain.Smartphone;
-import ua.nure.webshop.domain.Smartwatch;
-import ua.nure.webshop.repos.ProductRepository;
 import ua.nure.webshop.service.ParametersService;
 import ua.nure.webshop.service.ProductService;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/admin")
@@ -27,7 +26,10 @@ public class AdminController {
 
     private ProductService productService;
     private ParametersService parametersService;
-
+    @Value("${images.path}")
+    private String folderPath;
+    @Value("${full.image.path}")
+    private String fullFolderPath;
     public AdminController(ProductService productService, ParametersService parametersService) {
         this.productService = productService;
         this.parametersService = parametersService;
@@ -38,8 +40,10 @@ public class AdminController {
         return "products/products";
     }
 
-    @GetMapping("/{productID}")
-    public String choose(@PathVariable String productID, Model model,
+    @PostMapping("/change")
+    public String choose(Model model,
+                         @RequestParam(name = "productID")  Long productID,
+                         @RequestParam(name = "file", required = false) MultipartFile file,
                          @RequestParam(name = "name", required = false) Optional<String> name,
                          @RequestParam(name = "price", required = false) Optional<String> price,
                          @RequestParam(name = "description", required = false) Optional<String> description,
@@ -51,7 +55,7 @@ public class AdminController {
                          @RequestParam(name = "color", required = false) Optional<String> colorsParam,
                          @RequestParam(name = "cpu", required = false) Optional<String> cpusParam,
                          @RequestParam(name = "displayType", required = false) Optional<String> displayTypesParam,
-                         @RequestParam(name = "manufacturer", required = false) Optional<String> manufacturerParam) {
+                         @RequestParam(name = "manufacturer", required = false) Optional<String> manufacturerParam) throws IOException {
 
         Products product = productService.findProductByID(Long.valueOf(productID));
 
@@ -62,53 +66,40 @@ public class AdminController {
         product.setPrice(BigDecimal.valueOf(Double.valueOf(priceID)));
         product.setDescription(descriptionID);
 
-        if ("Computer".equals(product.getCategory().getCategoryName())) {
-            Computer computer = (Computer) product;
-            String flashMemorySizeID = flashMemorySizesParam.orElse(String.valueOf(computer.getFlash_memory_size_id()));
-            String colorID = colorsParam.orElse(String.valueOf(computer.getColor_id()));
-            String memorySizeID = memorySizesParam.orElse(String.valueOf(computer.getMemory_size_id()));
-            String cpuID = cpusParam.orElse(String.valueOf(computer.getCpu_id()));
-            computer.setFlash_memory_size_id(Long.valueOf(flashMemorySizeID));
-            computer.setColor_id(Long.valueOf(colorID));
-            computer.setCpu_id(Long.valueOf(cpuID));
-            computer.setMemory_size_id(Long.valueOf(memorySizeID));
+        String diagonalID = diagonalParam.orElse(String.valueOf(product.getDiagonal_id()));
+        String resolutionID = resolutionsParam.orElse(String.valueOf(product.getResolution_id()));
+        String memorySizeID = memorySizesParam.orElse(String.valueOf(product.getMemory_size_id()));
+        String flashMemorySizeID = flashMemorySizesParam.orElse(String.valueOf(product.getFlash_memory_size_id()));
+        String batteryCapacityID = batteryCapacitiesParam.orElse(String.valueOf(product.getBattery_capacity_id()));
+        String colorID = colorsParam.orElse(String.valueOf(product.getColor_id()));
+        String cpuID = cpusParam.orElse(String.valueOf(product.getCpu_id()));
+        String displayTypeID = displayTypesParam.orElse(String.valueOf(product.getDisplay_type_id()));
+        String manufacturerID = manufacturerParam.orElse(String.valueOf(product.getManufacturer_id()));
+        product.setDiagonal_id(Long.valueOf(diagonalID));
+        product.setResolution_id(Long.valueOf(resolutionID));
+        product.setMemory_size_id(Long.valueOf(memorySizeID));
+        product.setFlash_memory_size_id(Long.valueOf(flashMemorySizeID));
+        product.setBattery_capacity_id(Long.valueOf(batteryCapacityID));
+        product.setColor_id(Long.valueOf(colorID));
+        product.setCpu_id(Long.valueOf(cpuID));
+        product.setDisplay_type_id(Long.valueOf(displayTypeID));
+        product.setManufacturer_id(Long.valueOf(manufacturerID));
+
+        if (file != null && !file.getOriginalFilename().isEmpty()) {
+            File uploadDir = new File(folderPath);
+
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+
+            file.transferTo(new File(fullFolderPath + file.getOriginalFilename()));
+
+            product.setImageUrl(folderPath + file.getOriginalFilename());
+            product.setImageName(file.getOriginalFilename());
         }
-        if ("Smartwatch".equals(product.getCategory().getCategoryName())) {
-            Smartwatch smartwatch = (Smartwatch) product;
-            String diagonalID = diagonalParam.orElse(String.valueOf(smartwatch.getDiagonal_id()));
-            String resolutionID = resolutionsParam.orElse(String.valueOf(smartwatch.getResolution_id()));
-            String flashMemorySizeID = flashMemorySizesParam.orElse(String.valueOf(smartwatch.getFlash_memory_size_id()));
-            String batteryCapacityID = batteryCapacitiesParam.orElse(String.valueOf(smartwatch.getBattery_capacity_id()));
-            String colorID = colorsParam.orElse(String.valueOf(smartwatch.getColor_id()));
-            smartwatch.setDiagonal_id(Long.valueOf(diagonalID));
-            smartwatch.setResolution_id(Long.valueOf(resolutionID));
-            smartwatch.setFlash_memory_size_id(Long.valueOf(flashMemorySizeID));
-            smartwatch.setBattery_capacity_id(Long.valueOf(batteryCapacityID));
-            smartwatch.setColor_id(Long.valueOf(colorID));
-            model.addAttribute("product", smartwatch);
-        }
-        if ("Smartphone".equals(product.getCategory().getCategoryName())) {
-            Smartphone smartphone = (Smartphone) product;
-            String diagonalID = diagonalParam.orElse(String.valueOf(smartphone.getDiagonal_id()));
-            String resolutionID = resolutionsParam.orElse(String.valueOf(smartphone.getResolution_id()));
-            String memorySizeID = memorySizesParam.orElse(String.valueOf(smartphone.getMemory_size_id()));
-            String flashMemorySizeID = flashMemorySizesParam.orElse(String.valueOf(smartphone.getFlash_memory_size_id()));
-            String batteryCapacityID = batteryCapacitiesParam.orElse(String.valueOf(smartphone.getBattery_capacity_id()));
-            String colorID = colorsParam.orElse(String.valueOf(smartphone.getColor_id()));
-            String cpuID = cpusParam.orElse(String.valueOf(smartphone.getCpu_id()));
-            String displayTypeID = displayTypesParam.orElse(String.valueOf(smartphone.getDisplay_type_id()));
-            String manufacturerID = manufacturerParam.orElse(String.valueOf(smartphone.getManufacturer_id()));
-            smartphone.setDiagonal_id(Long.valueOf(diagonalID));
-            smartphone.setResolution_id(Long.valueOf(resolutionID));
-            smartphone.setMemory_size_id(Long.valueOf(memorySizeID));
-            smartphone.setFlash_memory_size_id(Long.valueOf(flashMemorySizeID));
-            smartphone.setBattery_capacity_id(Long.valueOf(batteryCapacityID));
-            smartphone.setColor_id(Long.valueOf(colorID));
-            smartphone.setCpu_id(Long.valueOf(cpuID));
-            smartphone.setDisplay_type_id(Long.valueOf(displayTypeID));
-            smartphone.setManufacturer_id(Long.valueOf(manufacturerID));
-            model.addAttribute("product", smartphone);
-        }
+
+        model.addAttribute("product", product);
+
         session().removeAttribute("product");
         model.addAttribute("product", product);
         session().setAttribute("product", product);
