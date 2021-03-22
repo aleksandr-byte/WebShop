@@ -2,6 +2,7 @@ package ua.nure.webshop.domain;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "Products")
@@ -11,8 +12,8 @@ public class Products extends Characteristics{
     private String name;
     @Column(nullable = false)
     private BigDecimal price;
-    @Column(nullable = false)
-    private BigDecimal rating;
+    @Transient
+    private int rating;
     @Column(nullable = false, length = 1000)
     private String description;
     @Column(name = "image_name")
@@ -31,6 +32,10 @@ public class Products extends Characteristics{
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "manufacturer_id", insertable = false, updatable = false)
     private Manufacturer manufacturer;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    private List<Grade> gradeList;
 
     public Products() {
     }
@@ -116,12 +121,20 @@ public class Products extends Characteristics{
         this.manufacturer = manufacturer;
     }
 
-    public BigDecimal getRating() {
+    public int getRating() {
         return rating;
     }
 
-    public void setRating(BigDecimal rating) {
+    public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public List<Grade> getGradeList() {
+        return gradeList;
+    }
+
+    public void setGradeList(List<Grade> gradeList) {
+        this.gradeList = gradeList;
     }
 
     @Override

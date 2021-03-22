@@ -336,8 +336,8 @@
                                th:text="${product.getCpu().getValue()}"/></p>
                         </div>
                         <form th:id="gradeForm" sec:authorize="hasAuthority('USER')" th:action="@{/products/grade}" method="post">
-                            <input type="hidden" th:id="'grade'" th:name="grade" th:value="${product.getId()}">
-                            <input type="hidden" th:name="productID" th:value="${product.rating}">
+                            <input type="hidden" th:id="'grade'" th:name="grade" th:value="${product.rating}">
+                            <input type="hidden" th:id="'productID'" th:name="productID" th:value="${product.getId()}">
                         </form>
                         <div class="card-footer">
                             <div th:id="${product.getId()}"></div>
@@ -348,6 +348,7 @@
                                     ratedFill: "#00FF00",
                                     onSet: function (rating, rateYoInstance) {
                                         document.getElementById('grade').value = rating;
+                                        document.getElementById('productID').value = /*[[${product.getId()}]]*/;
                                         $("#gradeForm").submit();
                                     }
                                     });

@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import ua.nure.webshop.domain.*;
-import ua.nure.webshop.service.CartService;
-import ua.nure.webshop.service.CategoriesService;
-import ua.nure.webshop.service.ParametersService;
-import ua.nure.webshop.service.ProductService;
+import ua.nure.webshop.repos.GradeRepository;
+import ua.nure.webshop.service.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -30,12 +28,16 @@ public class ProductsController {
     private final CategoriesService categoriesService;
     private final ParametersService parametersService;
     private final CartService cartService;
+    private final GradeRepository gradeRepository;
+    private final RecommendationService recommendationService;
 
-    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService, CartService cartService) {
+    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService, CartService cartService, GradeRepository gradeRepository, RecommendationService recommendationService) {
         this.productService = productService;
         this.categoriesService = categoriesService;
         this.parametersService = parametersService;
         this.cartService = cartService;
+        this.gradeRepository = gradeRepository;
+        this.recommendationService = recommendationService;
     }
 
     @GetMapping()
@@ -44,11 +46,16 @@ public class ProductsController {
                         @RequestParam("size") Optional<Integer> size) {
 
         Page<Products> productsPage = productService.findAllProducts(setPageRequest(page, size));
+
+        productsPage.getContent().forEach(product -> product.setRating(gradeRepository.getAvgGradeByProductID(product.getId()).orElse(0)));
+
         model.addAttribute("products", productsPage.getContent());
         model.addAttribute("productPage", productsPage);
 
         Iterable<Categories> categories = categoriesService.findAllCategories();
         model.addAttribute("categories", categories);
+
+        recommendationService.getItems(productsPage.getContent());
 
         setPageNumbersInModel(productsPage, model);
 
@@ -81,12 +88,16 @@ public class ProductsController {
                 displayTypesParams.orElse(new ArrayList()),
                 manufacturers.orElse(new ArrayList()));
         Page<Products> productsPage = productService.findProductsByCategoryAndCondition(parameters, categoryName, setPageRequest(page, size));
+
+        productsPage.getContent().forEach(product -> product.setRating(gradeRepository.getAvgGradeByProductID(product.getId()).orElse(0)));
+
         model.addAttribute("products", productsPage.getContent());
         setPageNumbersInModel(productsPage, model);
         model.addAttribute("productPage", productsPage);
         List<Categories> categories = new ArrayList();
         categories.add(new Categories(categoryName));
         model.addAttribute("categories", categories);
+
         parametersService.setParametersToModel(model);
 
         return "products/products";
@@ -106,10 +117,11 @@ public class ProductsController {
                            @RequestParam("productID") Optional<String> productID,
                            @RequestParam("grade") Optional<String> grade){
 
-        System.out.println("Grade" + grade.get());
-        System.out.println("ProductID" + productID.get());
-        System.out.println("UserID" + user.getId());
-
+        Grade gradeObj = new Grade();
+        gradeObj.setUserID(user.getId());
+        gradeObj.setProductID(Long.parseLong(productID.get()));
+        gradeObj.setGrade(Double.parseDouble(grade.get()));
+        gradeRepository.save(gradeObj);
         return "redirect:/";
     }
 

@@ -10,6 +10,7 @@ import ua.nure.webshop.builder.SqlBuilder;
 import ua.nure.webshop.domain.*;
 import ua.nure.webshop.repos.ProductRepository;
 import ua.nure.webshop.service.ProductService;
+import ua.nure.webshop.service.RecommendationService;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
