@@ -18,14 +18,17 @@ public class DefaultRecommendationServiceImpl implements RecommendationService {
     public List<Products> getItems(List<Products> products) {
         List<FunctionUtility> functionUtilities = UtilityFunction.getLocalUtility(products);
 
+        System.out.println(functionUtilities);
+
         Comparator<FunctionUtility> comparator = Comparator
-                .comparing(FunctionUtility::getP1)
-                .thenComparing(FunctionUtility::getP2)
+                .comparing(FunctionUtility::getK)
                 .reversed();
 
         List<FunctionUtility> sortedFunctionUtilities = functionUtilities.stream()
                 .sorted(comparator)
                 .collect(Collectors.toList());
+
+        System.out.println(sortedFunctionUtilities);
 
         List<Products> recItem = new ArrayList();
         sortedFunctionUtilities.forEach(functionUtility -> recItem.add(functionUtility.getProduct()));

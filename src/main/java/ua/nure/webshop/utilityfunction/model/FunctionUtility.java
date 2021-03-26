@@ -8,7 +8,7 @@ public class FunctionUtility {
 
     private double p1;
     private double p2;
-    private double p3;
+    private double K;
     private Products product;
 
     public double getP1() {
@@ -27,14 +27,6 @@ public class FunctionUtility {
         this.p2 = p2;
     }
 
-    public double getP3() {
-        return p3;
-    }
-
-    public void setP3(double p3) {
-        this.p3 = p3;
-    }
-
     public Products getProduct() {
         return product;
     }
@@ -43,32 +35,36 @@ public class FunctionUtility {
         this.product = product;
     }
 
+    public double getK() {
+        return K;
+    }
+
+    public void setK(double k) {
+        K = k;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         FunctionUtility that = (FunctionUtility) o;
         return Double.compare(that.p1, p1) == 0 &&
                 Double.compare(that.p2, p2) == 0 &&
-                Double.compare(that.p3, p3) == 0;
+                Double.compare(that.K, K) == 0 &&
+                Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(p1, p2, p3);
+        return Objects.hash(p1, p2, K, product);
     }
 
     @Override
     public String toString() {
         return "LocalUtility{" +
                 "ID: " + product.getId() +
-                ", p1: " + p1 +
-                ", p2: " + p2 +
-                ", p3: " + p3 +
+                ", name: " + product.getName() +
+                ", K: " + K +
                 "}\r\n";
     }
 }

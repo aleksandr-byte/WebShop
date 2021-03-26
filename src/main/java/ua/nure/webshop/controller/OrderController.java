@@ -1,8 +1,10 @@
 package ua.nure.webshop.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,18 +13,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import ua.nure.webshop.domain.Order;
 import ua.nure.webshop.domain.ProductOrder;
-import ua.nure.webshop.domain.Role;
 import ua.nure.webshop.domain.User;
 import ua.nure.webshop.repos.ProductOrderRepository;
 import ua.nure.webshop.service.UserService;
-import ua.nure.webshop.utils.PasswordGenerator;
+import ua.nure.webshop.service.impl.MailSender;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Random;
 import java.util.UUID;
 
 @Controller
@@ -31,6 +31,9 @@ public class OrderController {
 
     private ProductOrderRepository productOrderRepository;
     private UserService userService;
+
+    @Autowired
+    private MailSender mailSender;
 
     public OrderController(ProductOrderRepository productOrderRepository, UserService userService) {
         this.productOrderRepository = productOrderRepository;
@@ -59,7 +62,6 @@ public class OrderController {
                                @RequestParam(required = false) String deliveryAddress,
                                @RequestParam(required = false) String email) {
         List<ProductOrder> productOrders = (List<ProductOrder>) session().getAttribute("productOrders");
-        ProductOrder productOrder = productOrders.get(0);
         UUID uuid = UUID.randomUUID();
         Order order = new Order();
         order.setAddress(deliveryAddress);
@@ -71,12 +73,33 @@ public class OrderController {
         if (user != null) {
             order.setUser(user);
         } else {
-            User quest = setGuest(email);
-            userService.addUser(quest);
-            order.setUser(quest);
+            user = setGuest(email);
+            userService.addUser(user);
+            order.setUser(user);
         }
-        productOrder.setOrder(order);
-        productOrderRepository.save(productOrder);
+        StringBuilder stringBuilder = new StringBuilder();
+        double orderTotalPRice = 0;
+        for (ProductOrder productOrder : productOrders) {
+            productOrder.setOrder(order);
+            stringBuilder.append("Product name: ")
+                    .append(productOrder.getProducts().getName())
+                    .append(", quantity: ")
+                    .append(productOrder.getQuantity())
+                    .append(", price: ")
+                    .append(productOrder.getTotalPrice()).append("\n");
+            orderTotalPRice = orderTotalPRice + productOrder.getTotalPrice().doubleValue();
+            productOrderRepository.save(productOrder);
+        }
+        if (!StringUtils.isEmpty(user.getEmail())) {
+            String message = String.format(
+                    "Hello, %s! \n" +
+                            "Thank you for your buying. \nOrder details: \n%s\nTotal order price: %s",
+                    user.getEmail().split("@")[0],
+                    stringBuilder.toString(),
+                    orderTotalPRice
+            );
+            mailSender.send(user.getEmail(), "Order details", message);
+        }
         session().removeAttribute("productOrders");
         return "users/success";
     }
@@ -88,12 +111,16 @@ public class OrderController {
 
     private User setGuest(String email) {
         User guest = new User();
-        guest.setUsername(email.split("@")[0]);
+        guest.setUsername(email.split("@")[0] + random(1, 1000));
         guest.setEmail(email);
-        Set<Role> roleSet = new HashSet();
-        roleSet.add(Role.USER);
-        guest.setRoles(roleSet);
+        guest.setRoleID(Long.valueOf(1));
         guest.setPassword(userService.generatePassword());
         return guest;
+    }
+
+    private double random(double min, double max) {
+        double res = max - min;
+        Random random = new Random();
+        return (min + res * random.nextDouble());
     }
 }

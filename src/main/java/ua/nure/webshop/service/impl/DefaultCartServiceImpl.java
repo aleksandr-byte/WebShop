@@ -18,13 +18,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class CartServiceImpl implements CartService {
+public class DefaultCartServiceImpl implements CartService {
 
     @PersistenceContext
     private EntityManager entityManager;
     private final ProductRepository productRepository;
 
-    public CartServiceImpl(ProductRepository productRepository) {
+    public DefaultCartServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 

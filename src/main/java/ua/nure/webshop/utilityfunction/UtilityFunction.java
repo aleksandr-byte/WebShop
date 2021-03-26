@@ -35,7 +35,8 @@ public class UtilityFunction {
             FunctionUtility functionUtility = new FunctionUtility();
             functionUtility.setProduct(product);
             functionUtility.setP1((product.getRating() - minK1) / (maxK1 - minK1));
-            functionUtility.setP2((product.getPrice().doubleValue() - minK2) / (maxK2 - minK2));
+            functionUtility.setP2((product.getPrice().doubleValue() - maxK2) / (minK2 - maxK2));
+            functionUtility.setK(functionUtility.getP1() * 0.6 + functionUtility.getP2() * 0.4);
             utilities.add(functionUtility);
         });
         return utilities;

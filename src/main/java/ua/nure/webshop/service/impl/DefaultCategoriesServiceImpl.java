@@ -6,11 +6,11 @@ import ua.nure.webshop.repos.CategoriesRepository;
 import ua.nure.webshop.service.CategoriesService;
 
 @Service
-public class CategoriesServiceImpl implements CategoriesService {
+public class DefaultCategoriesServiceImpl implements CategoriesService {
 
     private final CategoriesRepository repository;
 
-    public CategoriesServiceImpl(CategoriesRepository repository) {
+    public DefaultCategoriesServiceImpl(CategoriesRepository repository) {
         this.repository = repository;
     }
 

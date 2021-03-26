@@ -42,6 +42,7 @@ public class ProductsController {
 
     @GetMapping()
     public String index(Model model,
+                        @AuthenticationPrincipal User user,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
 
@@ -55,10 +56,23 @@ public class ProductsController {
         Iterable<Categories> categories = categoriesService.findAllCategories();
         model.addAttribute("categories", categories);
 
-        recommendationService.getItems(productsPage.getContent());
+        List<Products> defRecom = recommendationService.getItems(productsPage.getContent());
+        model.addAttribute("defRecom", defRecom);
 
         setPageNumbersInModel(productsPage, model);
 
+        if(user == null) {
+            model.addAttribute("role", "guest");
+            System.out.println("guest");
+        }
+        if(user != null && user.getRoles().contains(Role.USER)) {
+            model.addAttribute("role", "user");
+            System.out.println("user");
+        }
+        if(user != null && user.getRoles().contains(Role.ADMIN)) {
+            model.addAttribute("role", "admin");
+            System.out.println("user");
+        }
         return "products/products";
     }
 
@@ -105,11 +119,12 @@ public class ProductsController {
 
     @GetMapping("/cart/{productID}")
     public String addToCart(@PathVariable String productID,
+                            @AuthenticationPrincipal User user,
                             Model model,
                             @RequestParam("page") Optional<Integer> page,
                             @RequestParam("size") Optional<Integer> size) {
         cartService.addProductToCart(productID, session());
-        return index(model, page, size);
+        return index(model,user, page, size);
     }
 
     @PostMapping("/products/grade")
