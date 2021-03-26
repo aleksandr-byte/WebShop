@@ -14,6 +14,8 @@ public class Products extends Characteristics{
     private BigDecimal price;
     @Transient
     private int rating;
+    @Transient
+    private Double cosineSimilarity;
     @Column(nullable = false, length = 1000)
     private String description;
     @Column(name = "image_name")
@@ -135,6 +137,14 @@ public class Products extends Characteristics{
 
     public void setGradeList(List<Grade> gradeList) {
         this.gradeList = gradeList;
+    }
+
+    public Double getCosineSimilarity() {
+        return cosineSimilarity;
+    }
+
+    public void setCosineSimilarity(Double cosineSimilarity) {
+        this.cosineSimilarity = cosineSimilarity;
     }
 
     @Override

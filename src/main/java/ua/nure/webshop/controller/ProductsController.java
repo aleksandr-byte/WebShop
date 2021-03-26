@@ -56,7 +56,7 @@ public class ProductsController {
         Iterable<Categories> categories = categoriesService.findAllCategories();
         model.addAttribute("categories", categories);
 
-        List<Products> defRecom = recommendationService.getItems(productsPage.getContent());
+        List<Products> defRecom = recommendationService.getItems(productsPage.getContent(), user);
         model.addAttribute("defRecom", defRecom);
 
         setPageNumbersInModel(productsPage, model);
