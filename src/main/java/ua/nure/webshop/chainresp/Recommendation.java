@@ -2,14 +2,12 @@ package ua.nure.webshop.chainresp;
 
 import ua.nure.webshop.domain.Products;
 import ua.nure.webshop.domain.User;
-import ua.nure.webshop.repos.OrderRepository;
 
 import java.util.List;
 
 public abstract class Recommendation {
 
     private Recommendation next;
-    private List<Products> products;
 
     public Recommendation(Recommendation next) {
         this.next = next;
@@ -18,14 +16,13 @@ public abstract class Recommendation {
     public Recommendation() {
     }
 
-    protected abstract List<Products> recommendation(List<Products> products, User user, OrderRepository orderRepository);
+    protected abstract List<Products> recommendation(List<Products> inputProducts, User user, List<Products> productsToCompare);
 
-    public List<Products> setRecommendation(List<Products> products, User user, OrderRepository orderRepository) {
-        List<Products> recItem = this.recommendation(products, user, orderRepository);
-        if (next != null) {
-            next.setRecommendation(products, user, orderRepository);
+    public List<Products> setRecommendation(List<Products> inputProducts, User user, List<Products> productsToCompare) {
+        if (next == null) {
+            return this.recommendation(inputProducts, user, productsToCompare);
         }
-        return recItem;
+        return next.recommendation(inputProducts, user, productsToCompare);
     }
 
 }

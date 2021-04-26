@@ -42,9 +42,10 @@ public class UtilityFunction {
             }
             functionUtility.setP2((product.getPrice().doubleValue() - maxK2) / (minK2 - maxK2));
             functionUtility.setK(functionUtility.getP1() * 0.6 + functionUtility.getP2() * 0.4);
-            utilities.add(functionUtility);
+            if (functionUtility.getK() >= 0.5) {
+                utilities.add(functionUtility);
+            }
         });
         return utilities;
     }
-
 }

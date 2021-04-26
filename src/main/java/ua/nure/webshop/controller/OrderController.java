@@ -16,7 +16,7 @@ import ua.nure.webshop.domain.ProductOrder;
 import ua.nure.webshop.domain.User;
 import ua.nure.webshop.repos.ProductOrderRepository;
 import ua.nure.webshop.service.UserService;
-import ua.nure.webshop.service.impl.MailSender;
+import ua.nure.webshop.service.impl.MailSenderServiceImpl;
 
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ public class OrderController {
     private UserService userService;
 
     @Autowired
-    private MailSender mailSender;
+    private MailSenderServiceImpl mailSender;
 
     public OrderController(ProductOrderRepository productOrderRepository, UserService userService) {
         this.productOrderRepository = productOrderRepository;

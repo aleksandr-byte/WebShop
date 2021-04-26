@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface RecommendationService {
 
-    List<Products> getItems(List<Products> products, User user);
+    List<Products> getItems(List<Products> productsForQuery, User user, List<Products> productsToCompare);
 
 }

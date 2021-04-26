@@ -12,6 +12,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import ua.nure.webshop.domain.*;
 import ua.nure.webshop.repos.GradeRepository;
 import ua.nure.webshop.service.*;
+import ua.nure.webshop.repos.OrderRepository;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -30,14 +31,16 @@ public class ProductsController {
     private final CartService cartService;
     private final GradeRepository gradeRepository;
     private final RecommendationService recommendationService;
+    private final OrderRepository orderRepository;
 
-    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService, CartService cartService, GradeRepository gradeRepository, RecommendationService recommendationService) {
+    public ProductsController(ProductService productService, CategoriesService categoriesService, ParametersService parametersService, CartService cartService, GradeRepository gradeRepository, RecommendationService recommendationService, OrderRepository orderRepository) {
         this.productService = productService;
         this.categoriesService = categoriesService;
         this.parametersService = parametersService;
         this.cartService = cartService;
         this.gradeRepository = gradeRepository;
         this.recommendationService = recommendationService;
+        this.orderRepository = orderRepository;
     }
 
     @GetMapping()
@@ -56,20 +59,32 @@ public class ProductsController {
         Iterable<Categories> categories = categoriesService.findAllCategories();
         model.addAttribute("categories", categories);
 
-        List<Products> defRecom = recommendationService.getItems(productsPage.getContent(), user);
+        List<Products> userOrderProducts = new ArrayList();
+        if (user != null && user.getRoles().contains(Role.USER)) {
+            List<String> ordersID = orderRepository.findOrdersByUserID(user.getId());
+            for (String orderID : ordersID) {
+                orderRepository.findOrderProductsByOrderID(orderID).forEach(productName -> {
+                    Products product = new Products();
+                    product.setName(productName);
+                    userOrderProducts.add(product);
+                });
+            }
+        }
+
+        List<Products> defRecom = recommendationService.getItems(productsPage.getContent(), user, userOrderProducts);
         model.addAttribute("defRecom", defRecom);
 
         setPageNumbersInModel(productsPage, model);
 
-        if(user == null) {
+        if (user == null) {
             model.addAttribute("role", "guest");
             System.out.println("guest");
         }
-        if(user != null && user.getRoles().contains(Role.USER)) {
+        if (user != null && user.getRoles().contains(Role.USER)) {
             model.addAttribute("role", "user");
             System.out.println("user");
         }
-        if(user != null && user.getRoles().contains(Role.ADMIN)) {
+        if (user != null && user.getRoles().contains(Role.ADMIN)) {
             model.addAttribute("role", "admin");
             System.out.println("user");
         }
@@ -124,13 +139,13 @@ public class ProductsController {
                             @RequestParam("page") Optional<Integer> page,
                             @RequestParam("size") Optional<Integer> size) {
         cartService.addProductToCart(productID, session());
-        return index(model,user, page, size);
+        return index(model, user, page, size);
     }
 
     @PostMapping("/products/grade")
     public String setGrade(@AuthenticationPrincipal User user,
                            @RequestParam("productID") Optional<String> productID,
-                           @RequestParam("grade") Optional<String> grade){
+                           @RequestParam("grade") Optional<String> grade) {
 
         Grade gradeObj = new Grade();
         gradeObj.setUserID(user.getId());

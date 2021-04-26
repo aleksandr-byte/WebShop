@@ -5,6 +5,7 @@ DROP TABLE IF exists Characteristics;
 DROP TABLE IF exists roles;
 DROP TABLE IF exists product_orders;
 DROP TABLE IF exists orders;
+DROP TABLE IF exists grade;
 DROP TABLE IF exists users;
 DROP TABLE IF exists Products;
 DROP TABLE IF exists product_additional_info;
@@ -151,6 +152,28 @@ CREATE TABLE Characteristics(
     FOREIGN KEY (memory_size_id)  REFERENCES memory_sizes (memory_size_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     FOREIGN KEY (cpu_id)  REFERENCES cpus (cpu_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+-- -----------------------------------------------------
+-- Table `webshop`.`grade`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `webshop`.`grade` (
+  `product_id` BIGINT NOT NULL,
+  `user_id` BIGINT NOT NULL,
+  `grade` DECIMAL(10,0) NOT NULL,
+  PRIMARY KEY (`product_id`, `user_id`),
+  INDEX `user_id` (`user_id` ASC) VISIBLE,
+  CONSTRAINT `grade_ibfk_1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `webshop`.`users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `grade_ibfk_2`
+    FOREIGN KEY (`product_id`)
+    REFERENCES `webshop`.`products` (`product_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
 
 insert into categories (category_name) values ("Computer");
 insert into categories (category_name) values ("Smartwatch");
