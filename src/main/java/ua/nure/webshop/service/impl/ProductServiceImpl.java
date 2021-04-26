@@ -55,14 +55,7 @@ public class ProductServiceImpl implements ProductService {
         return products;
     }
 
-/*    @Override
-    public Page<Products> findProductsByCategoryName(PageRequest pageRequest) {
-        Page<Products> products = productRepository.findAllByCategoryCategoryName(pageRequest);
-        setImageUrl(products.getContent());
-        return products;
-    }*/
-
-    public Page<Products> findProductsByCategoryAndCondition(Parameters parameters, String categoryName,
+    public Page<Products> findProductsByCategoryAndParameters(Parameters parameters, String categoryName,
                                                              PageRequest pageRequest) {
         SqlBuilder sqlBuilder = new SqlBuilder(parameters, categoryName);
         TypedQuery<Products> query = entityManager.createQuery(sqlBuilder.getQuery(), Products.class);

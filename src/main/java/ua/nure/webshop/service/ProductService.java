@@ -14,8 +14,7 @@ public interface ProductService {
 
     Page<Products> findAllProducts(PageRequest pageRequest);
 
-/*    Page<Products> findProductsByCategoryName(PageRequest pageRequest);*/
-
-    Page<Products> findProductsByCategoryAndCondition(Parameters parameters, String categoryName,
+    Page<Products> findProductsByCategoryAndParameters(Parameters parameters, String categoryName,
                                                       PageRequest pageRequest);
 }
+

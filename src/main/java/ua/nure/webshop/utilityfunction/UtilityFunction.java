@@ -34,7 +34,12 @@ public class UtilityFunction {
         products.forEach(product -> {
             FunctionUtility functionUtility = new FunctionUtility();
             functionUtility.setProduct(product);
-            functionUtility.setP1((product.getRating() - minK1) / (maxK1 - minK1));
+            if (product.getRating() == 0) {
+                functionUtility.setP1(0.0);
+            }
+            else {
+                functionUtility.setP1((product.getRating() - minK1) / (maxK1 - minK1));
+            }
             functionUtility.setP2((product.getPrice().doubleValue() - maxK2) / (minK2 - maxK2));
             functionUtility.setK(functionUtility.getP1() * 0.6 + functionUtility.getP2() * 0.4);
             utilities.add(functionUtility);

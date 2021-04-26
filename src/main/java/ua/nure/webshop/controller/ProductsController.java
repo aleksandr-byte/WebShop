@@ -101,7 +101,7 @@ public class ProductsController {
                 cpusParams.orElse(new ArrayList()),
                 displayTypesParams.orElse(new ArrayList()),
                 manufacturers.orElse(new ArrayList()));
-        Page<Products> productsPage = productService.findProductsByCategoryAndCondition(parameters, categoryName, setPageRequest(page, size));
+        Page<Products> productsPage = productService.findProductsByCategoryAndParameters(parameters, categoryName, setPageRequest(page, size));
 
         productsPage.getContent().forEach(product -> product.setRating(gradeRepository.getAvgGradeByProductID(product.getId()).orElse(0)));
 

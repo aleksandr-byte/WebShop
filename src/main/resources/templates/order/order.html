@@ -79,9 +79,9 @@
                             <option value="pickupAddress" th:text="'From shop'"></option>
                             <option value="deliveryAddress" th:text="'Delivery'"></option>
                         </select>
-                        <input th:name="deliveryAddress" type='hidden' id='deliveryAddress' placeholder="Address"/>
+
                         <br/>
-                        <select th:name="pickupAddress" class="form-select" id="pickupAddress" onclick="setDeliveryAddress(this.value)">
+                        <select th:name="deliveryAddress" class="form-select">
                             <option value="Shop_1">Shop 1</option>
                             <option value="Shop_2">Shop 2</option>
                             <option value="Shop_3">Shop 3</option>
@@ -154,10 +154,6 @@
         if(exception == 0) {
             $("#buyForm").submit();
         }
-    }
-
-    function setDeliveryAddress(address) {
-        document.getElementById('deliveryAddress').value = address;
     }
 
     function showCardField(paymentOption) {
